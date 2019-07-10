@@ -1,13 +1,15 @@
 import libtcodpy as libtcod
 
 from components.fighter import Fighter
+from components.graphics import colors,tiles
 from death_functions import kill_monster, kill_player
 from entity import Entity, get_blocking_entities_at_location
 from fov_functions import initialize_fov, recompute_fov
+from game_messages import MessageLog
 from game_states import GameStates
 from input_handlers import handle_keys
 from map_objects.game_map import GameMap
-from render_functions import clear_all, render_all
+from render_functions import clear_all, render_all, RenderOrder
 
 
 def load_customfont():
@@ -23,18 +25,22 @@ def main():
     screen_width = 60
     screen_height = 40
 
+    bar_width = 20
+    panel_height = 7
+    panel_y = screen_height - panel_height
+
+    message_x = bar_width + 2
+    message_width = screen_width - bar_width - 2
+    message_height = panel_height - 1
+
     # Size of the map
     map_width = 60
     map_height = 40
 
-    #camera position
-    cam_x = screen_width/2
-    cam_y = screen_height/2
-
     # Some variables for the rooms in the map
     room_max_size = 10
     room_min_size = 6
-    max_rooms = 20
+    max_rooms = 40
 
     fov_algorithm = 0
     fov_light_walls = True
@@ -42,26 +48,8 @@ def main():
 
     max_monsters_per_room = 3
 
-    wall_tile = 256
-    floor_tile = 257
-    player_tile = 258
-    orc_tile = 259
-    troll_tile = 260
-    scroll_tile = 261
-    healingpotion_tile = 262
-    sword_tile = 263
-    shield_tile = 264
-    stairsdown_tile = 265
-    dagger_tile = 266
-
-    colors = {
-        'dark': libtcod.Color(53, 52, 42),
-        'light': libtcod.Color(211, 210, 203),
-        'green': libtcod.Color(77, 97, 60)
-    }
-
     fighter_component = Fighter(hp=30, defense=2, power=5)
-    player = Entity(0, 0, player_tile, libtcod.white, 'Player', blocks=True, fighter=fighter_component)
+    player = Entity(0, 0, tiles.get('player_tile'), libtcod.white, 'Player', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component)
     entities = [player]
 
     libtcod.console_set_custom_font('sprite-font.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD, 32, 10)
@@ -71,17 +59,20 @@ def main():
     load_customfont()
 
     con = libtcod.console_new(screen_width, screen_height)
+    panel = libtcod.console_new(screen_width, panel_height)
 
     game_map = GameMap(map_width, map_height)
     game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities,
                       max_monsters_per_room)
 
-    cam_x = screen_width / 2 - player.x
-    cam_y = screen_height / 2 - player.y
+    cam_x = int(player.x - screen_width / 2)
+    cam_y = int(player.y - screen_width / 2)
 
     fov_recompute = True
 
     fov_map = initialize_fov(game_map)
+
+    message_log = MessageLog(message_x, message_width, message_height)
 
     key = libtcod.Key()
     mouse = libtcod.Mouse()
@@ -94,7 +85,7 @@ def main():
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
 
-        render_all(con, entities, player, game_map, fov_map, fov_recompute, screen_width, screen_height, colors, cam_x, cam_y)
+        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height,map_width, map_height, bar_width, panel_height, panel_y, colors, cam_x, cam_y)
 
         fov_recompute = False
 
@@ -123,12 +114,12 @@ def main():
                     player_turn_results.extend(attack_results)
                 else:
                     player.move(dx, dy)
-                    cam_x = screen_width/2 - player.x
-                    cam_y = screen_height/2 - player.y
+                    cam_x = int(player.x - screen_width/2)
+                    cam_y = int(player.y - screen_height/2)
                     fov_recompute = True
 
             else:
-                print('You stupidly walk into the wall. Ouch.')
+                message_log.add_message('You stupidly walk into the wall. Ouch.')
             game_state = GameStates.ENEMY_TURN
 
         if exit:
@@ -142,7 +133,7 @@ def main():
             dead_entity = player_turn_result.get('dead')
 
             if message:
-                print(message)
+                message_log.add_message(message)
 
             if dead_entity:
                 if dead_entity == player:
@@ -150,7 +141,7 @@ def main():
                 else:
                     message = kill_monster(dead_entity)
 
-                print(message)
+                message_log.add_message(message)
 
         if game_state == GameStates.ENEMY_TURN:
             for entity in entities:
@@ -162,7 +153,7 @@ def main():
                         dead_entity = enemy_turn_result.get('dead')
 
                         if message:
-                            print(message)
+                            message_log.add_message(message)
 
                         if dead_entity:
                             if dead_entity == player:
@@ -170,7 +161,7 @@ def main():
                             else:
                                 message = kill_monster(dead_entity)
 
-                            print(message)
+                            message_log.add_message(message)
 
                             if game_state == GameStates.PLAYER_DEAD:
                                 break
