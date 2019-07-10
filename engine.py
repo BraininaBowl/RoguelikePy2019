@@ -5,7 +5,7 @@ from components.graphics import colors,tiles
 from death_functions import kill_monster, kill_player
 from entity import Entity, get_blocking_entities_at_location
 from fov_functions import initialize_fov, recompute_fov
-from game_messages import MessageLog
+from game_messages import MessageLog, Message
 from game_states import GameStates
 from input_handlers import handle_keys
 from map_objects.game_map import GameMap
@@ -119,7 +119,7 @@ def main():
                     fov_recompute = True
 
             else:
-                message_log.add_message('You stupidly walk into the wall. Ouch.')
+                message_log.add_message(Message('You stupidly walk into the wall. Ouch.'))
             game_state = GameStates.ENEMY_TURN
 
         if exit:
