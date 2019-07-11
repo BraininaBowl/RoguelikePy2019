@@ -17,7 +17,7 @@ def load_customfont():
     a = 256
 
     # The "y" is the row index, here we load the sixth row in the font file. Increase the "6" to load any new rows from the file
-    for y in range(5, 6):
+    for y in range(5, 10):
         libtcod.console_map_ascii_codes_to_font(a, 32, 0, y)
         a += 32
 
@@ -52,7 +52,7 @@ def main():
     player = Entity(0, 0, tiles.get('player_tile'), libtcod.white, 'Player', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component)
     entities = [player]
 
-    libtcod.console_set_custom_font('sprite-font.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD, 32, 10)
+    libtcod.console_set_custom_font('sprite-font.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD, 32, 11)
 
     libtcod.console_init_root(screen_width, screen_height, 'A bird underground', False)
 
@@ -66,7 +66,7 @@ def main():
                       max_monsters_per_room)
 
     cam_x = int(player.x - screen_width / 2)
-    cam_y = int(player.y - screen_width / 2)
+    cam_y = int(player.y - screen_height / 2)
 
     fov_recompute = True
 
@@ -174,4 +174,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main().take_turn(player, fov_map, game_map, entities)
+
+                 
