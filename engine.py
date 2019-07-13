@@ -22,8 +22,8 @@ def load_customfont():
         a += 32
 
 def main():
-    screen_width = 40
-    screen_height = 20
+    screen_width = 80
+    screen_height = 40
 
     bar_width = 10
     panel_height = 7
@@ -58,7 +58,7 @@ def main():
     player = Entity(0, 0, tiles.get('player_tile'), libtcod.white, 'Player', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component)
     entities = [player]
 
-    libtcod.console_set_custom_font('sprite-font.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD, 32, 11)
+    libtcod.console_set_custom_font('sprite-font.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD, 32, 22)
 
     libtcod.console_init_root(screen_width, screen_height, 'A bird underground', False)
 

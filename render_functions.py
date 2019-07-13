@@ -42,20 +42,20 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
 
                 if visible:
                     if wall:
-                        libtcod.console_set_char_background(con, x, y, colors.get('light'), libtcod.BKGND_SET)
-                        libtcod.console_put_char(con, x, y, tiles.get('wall_tile'), libtcod.BKGND_NONE)
+                        libtcod.console_set_char_background(con, x*2, y*2, colors.get('light'), libtcod.BKGND_SET)
+                        libtcod.console_put_char(con, x*2, y*2, tiles.get('wall_tile'), libtcod.BKGND_NONE)
                     else:
-                        libtcod.console_set_char_background(con, x, y, colors.get('light'), libtcod.BKGND_SET)
+                        libtcod.console_set_char_background(con, x*2, y*2, colors.get('light'), libtcod.BKGND_SET)
 
                     game_map.tiles[x][y].explored = True
                 elif game_map.tiles[x][y].explored:
                     if wall:
-                        libtcod.console_set_char_background(con, x, y, colors.get('dark'), libtcod.BKGND_SET)
-                        libtcod.console_put_char(con, x, y, tiles.get('wall_tile'), libtcod.BKGND_NONE)
+                        libtcod.console_set_char_background(con, x*2, y*2, colors.get('dark'), libtcod.BKGND_SET)
+                        libtcod.console_put_char(con, x*2, y*2, tiles.get('wall_tile'), libtcod.BKGND_NONE)
                     else:
-                        libtcod.console_set_char_background(con, x, y, colors.get('dark'), libtcod.BKGND_SET)
+                        libtcod.console_set_char_background(con, x*2, y*2, colors.get('dark'), libtcod.BKGND_SET)
                 else:
-                    libtcod.console_set_char_background(con, x, y, colors.get('dark'), libtcod.BKGND_SET)
+                    libtcod.console_set_char_background(con, x*2, y*2, colors.get('dark'), libtcod.BKGND_SET)
 
     # Draw all entities in the list
 
@@ -64,7 +64,8 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
     for entity in entities_in_render_order:
         draw_entity(con, entity, fov_map,anim_frame)
 
-    libtcod.console_blit(con, 0,0,map_width, map_height, 0, -cam_x, -cam_y )
+    libtcod.console_blit(con, 0,0,map_width, map_height, 0, 0,0)
+#    libtcod.console_blit(con, 0,0,map_width*2, map_height*2, 0, -cam_x, -cam_y)
 
     libtcod.console_set_default_background(panel, colors.get('dark'))
     libtcod.console_clear(panel)
@@ -92,12 +93,18 @@ def draw_entity(con, entity, fov_map,anim_frame):
     if libtcod.map_is_in_fov(fov_map, entity.x, entity.y):
         libtcod.console_set_default_foreground(con, entity.color)
         if entity.render_order == RenderOrder.CORPSE:
-            sprite = entity.char+128
+            sprite = entity.char+56
         else:
-            sprite = entity.char+(32*anim_frame)
-        libtcod.console_put_char(con, entity.x, entity.y, sprite, libtcod.BKGND_NONE)
+            sprite = entity.char+(64*anim_frame)
+        libtcod.console_put_char(con, entity.x * 2, entity.y * 2, sprite, libtcod.BKGND_NONE)
+        libtcod.console_put_char(con, entity.x * 2+1, entity.y * 2, sprite+1, libtcod.BKGND_NONE)
+        libtcod.console_put_char(con, entity.x * 2, entity.y * 2+1, sprite+32, libtcod.BKGND_NONE)
+        libtcod.console_put_char(con, entity.x * 2+1, entity.y * 2+1, sprite+33, libtcod.BKGND_NONE)
 
 
 def clear_entity(con, entity):
     # erase the character that represents this object
-    libtcod.console_put_char(con, entity.x, entity.y, ' ', libtcod.BKGND_NONE)
+    libtcod.console_put_char(con, entity.x*2, entity.y*2, ' ', libtcod.BKGND_NONE)
+    libtcod.console_put_char(con, entity.x*2+1, entity.y*2, ' ', libtcod.BKGND_NONE)
+    libtcod.console_put_char(con, entity.x*2, entity.y*2+1, ' ', libtcod.BKGND_NONE)
+    libtcod.console_put_char(con, entity.x*2+1, entity.y*2+1, ' ', libtcod.BKGND_NONE)
