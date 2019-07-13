@@ -31,7 +31,7 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
     libtcod.console_print_ex(panel, int(x + total_width / 2), y, libtcod.BKGND_NONE, libtcod.CENTER,
                              '{0}: {1}/{2}'.format(name, value, maximum))
 
-def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y):
+def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y,anim_frame):
     if fov_recompute:
     # Draw all the tiles in the game map
         libtcod.console_set_default_foreground(con, libtcod.white)
@@ -62,7 +62,7 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
     entities_in_render_order = sorted(entities, key=lambda x: x.render_order.value)
 
     for entity in entities_in_render_order:
-        draw_entity(con, entity, fov_map)
+        draw_entity(con, entity, fov_map,anim_frame)
 
     libtcod.console_blit(con, 0,0,map_width, map_height, 0, -cam_x, -cam_y )
 
@@ -88,10 +88,14 @@ def clear_all(con, entities):
     for entity in entities:
         clear_entity(con, entity)
 
-def draw_entity(con, entity, fov_map):
+def draw_entity(con, entity, fov_map,anim_frame):
     if libtcod.map_is_in_fov(fov_map, entity.x, entity.y):
         libtcod.console_set_default_foreground(con, entity.color)
-        libtcod.console_put_char(con, entity.x, entity.y, entity.char, libtcod.BKGND_NONE)
+        if entity.render_order == RenderOrder.CORPSE:
+            sprite = entity.char+128
+        else:
+            sprite = entity.char+(32*anim_frame)
+        libtcod.console_put_char(con, entity.x, entity.y, sprite, libtcod.BKGND_NONE)
 
 
 def clear_entity(con, entity):

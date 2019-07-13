@@ -22,10 +22,10 @@ def load_customfont():
         a += 32
 
 def main():
-    screen_width = 60
-    screen_height = 40
+    screen_width = 40
+    screen_height = 20
 
-    bar_width = 20
+    bar_width = 10
     panel_height = 7
     panel_y = screen_height - panel_height
 
@@ -33,9 +33,13 @@ def main():
     message_width = screen_width - bar_width - 2
     message_height = panel_height - 1
 
+    # Animate
+    anim_time = libtcod.sys_elapsed_milli()
+    anim_frame = 0
+
     # Size of the map
-    map_width = 60
-    map_height = 40
+    map_width = 40
+    map_height = 20
 
     # Some variables for the rooms in the map
     room_max_size = 10
@@ -47,6 +51,8 @@ def main():
     fov_radius = 10
 
     max_monsters_per_room = 3
+
+    libtcod.sys_set_fps(30)
 
     fighter_component = Fighter(hp=30, defense=2, power=5)
     player = Entity(0, 0, tiles.get('player_tile'), libtcod.white, 'Player', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component)
@@ -82,10 +88,17 @@ def main():
     while not libtcod.console_is_window_closed():
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS | libtcod.EVENT_MOUSE, key, mouse)
 
+        if libtcod.sys_elapsed_milli() - anim_time > 200:
+            anim_time = libtcod.sys_elapsed_milli()
+            if anim_frame < 3:
+                anim_frame += 1
+            else:
+                anim_frame = 0
+
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
 
-        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height,map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y)
+        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height,map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y, anim_frame)
 
         fov_recompute = False
 

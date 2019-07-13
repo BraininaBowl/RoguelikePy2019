@@ -16,8 +16,7 @@ def kill_player(player):
 def kill_monster(monster):
     death_message = Message('{0} is dead!'.format(monster.name.capitalize()), colors.get('green'))
 
-    #monster.char = '%'
-    monster.color = colors.get('dark')
+#    monster.color = colors.get('dark')
     monster.blocks = False
     monster.fighter = None
     monster.ai = None
