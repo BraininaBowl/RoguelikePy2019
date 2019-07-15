@@ -17,7 +17,7 @@ def load_customfont():
     a = 256
 
     # The "y" is the row index, here we load the sixth row in the font file. Increase the "6" to load any new rows from the file
-    for y in range(5, 10):
+    for y in range(5, 18):
         libtcod.console_map_ascii_codes_to_font(a, 32, 0, y)
         a += 32
 
@@ -71,8 +71,8 @@ def main():
     game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities,
                       max_monsters_per_room)
 
-    cam_x = int(player.x - screen_width / 2)
-    cam_y = int(player.y - screen_height / 2)
+    cam_x = int(player.x*2 - screen_width / 2)
+    cam_y = int(player.y*2 - screen_height / 2)
 
     fov_recompute = True
 
@@ -127,8 +127,8 @@ def main():
                     player_turn_results.extend(attack_results)
                 else:
                     player.move(dx, dy)
-                    cam_x = int(player.x - screen_width/2)
-                    cam_y = int(player.y - screen_height/2)
+                    cam_x = int(player.x*2 - screen_width/2)
+                    cam_y = int(player.y*2 - screen_height/2)
                     fov_recompute = True
 
             else:
