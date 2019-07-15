@@ -25,7 +25,7 @@ def main():
     screen_width = 80
     screen_height = 40
 
-    bar_width = 10
+    bar_width = 12
     panel_height = 7
     panel_y = screen_height - panel_height
 
@@ -68,11 +68,12 @@ def main():
     panel = libtcod.console_new(screen_width, panel_height)
 
     game_map = GameMap(map_width, map_height)
-    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities,
-                      max_monsters_per_room)
+    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room)
 
     cam_x = int(player.x*2 - screen_width / 2)
     cam_y = int(player.y*2 - screen_height / 2)
+
+    print(cam_x)
 
     fov_recompute = True
 
