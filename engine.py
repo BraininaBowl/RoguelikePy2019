@@ -1,4 +1,4 @@
-import libtcodpy as libtcod
+import tcod as libtcod
 
 from components.fighter import Fighter
 from components.graphics import colors,tiles
