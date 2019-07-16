@@ -38,8 +38,8 @@ def main():
     anim_frame = 0
 
     # Size of the map
-    map_width = 40
-    map_height = 20
+    map_width = 120
+    map_height = 60
 
     # Some variables for the rooms in the map
     room_max_size = 10
@@ -64,7 +64,7 @@ def main():
 
     load_customfont()
 
-    con = libtcod.console_new(screen_width, screen_height)
+    con = libtcod.console_new(map_width*2, map_height*2)
     panel = libtcod.console_new(screen_width, panel_height)
 
     game_map = GameMap(map_width, map_height)
