@@ -1,4 +1,4 @@
-import libtcodpy as libtcod
+import tcod as libtcod
 
 from components.graphics import colors, tiles
 from enum import Enum
@@ -17,17 +17,17 @@ def get_names_under_mouse(cam_x,cam_y,mouse, entities, fov_map):
 
     return names.capitalize()
 
-def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_color):
+def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_color, text_color):
     bar_width = int(float(value) / maximum * total_width)
 
     libtcod.console_set_default_background(panel, back_color)
-    libtcod.console_rect(panel, x, y, total_width, 1, False, libtcod.BKGND_SCREEN)
+    libtcod.console_rect(panel, x, y, total_width, 1, False, libtcod.BKGND_SET)
 
     libtcod.console_set_default_background(panel, bar_color)
     if bar_width > 0:
-        libtcod.console_rect(panel, x, y, bar_width, 1, False, libtcod.BKGND_SCREEN)
+        libtcod.console_rect(panel, x, y, bar_width, 1, False, libtcod.BKGND_SET)
 
-    libtcod.console_set_default_foreground(panel, libtcod.white)
+    libtcod.console_set_default_foreground(panel, text_color)
     libtcod.console_print_ex(panel, int(x + total_width / 2), y, libtcod.BKGND_NONE, libtcod.CENTER, '{0}: {1}/{2}'.format(name, value, maximum))
 
 def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y,anim_frame):
@@ -84,10 +84,9 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
     for entity in entities_in_render_order:
         draw_entity(con, entity, fov_map,anim_frame)
 
-#    libtcod.console_blit(con, 0,0,map_width*2, map_height*2, 0, 0,0)
     libtcod.console_blit(con, 0,0,map_width*2, map_height*2, 0, -cam_x, -cam_y)
 
-    libtcod.console_set_default_background(panel, colors.get('dark'))
+    libtcod.console_set_default_background(panel, colors.get('light'))
     libtcod.console_clear(panel)
 
     # Print the game messages, one line at a time
@@ -97,9 +96,9 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
         libtcod.console_print_ex(panel, message_log.x, y, libtcod.BKGND_NONE, libtcod.LEFT, message.text)
         y += 1
 
-    render_bar(panel, 1, 1, bar_width, 'HP', player.fighter.hp, player.fighter.max_hp, colors.get('green'), colors.get('dark'))
+    render_bar(panel, 1, 1, bar_width, 'HP', player.fighter.hp, player.fighter.max_hp, colors.get('green'), colors.get('dark'), colors.get('light'))
 
-    libtcod.console_set_default_foreground(panel, colors.get('light'))
+    libtcod.console_set_default_foreground(panel, colors.get('dark'))
     libtcod.console_print_ex(panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, get_names_under_mouse(cam_x,cam_y,mouse, entities, fov_map))
 
     libtcod.console_blit(panel, 0, 0, screen_width, panel_height, 0, 0, panel_y)

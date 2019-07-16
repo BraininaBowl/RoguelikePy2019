@@ -25,7 +25,7 @@ def main():
     screen_width = 80
     screen_height = 40
 
-    bar_width = 12
+    bar_width = 14
     panel_height = 7
     panel_y = screen_height - panel_height
 
@@ -38,8 +38,8 @@ def main():
     anim_frame = 0
 
     # Size of the map
-    map_width = 40
-    map_height = 20
+    map_width = 80
+    map_height = 40
 
     # Some variables for the rooms in the map
     room_max_size = 10
@@ -64,16 +64,14 @@ def main():
 
     load_customfont()
 
-    con = libtcod.console_new(screen_width, screen_height)
+    con = libtcod.console_new(map_width*2, map_height*2)
     panel = libtcod.console_new(screen_width, panel_height)
 
     game_map = GameMap(map_width, map_height)
     game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room)
 
-    cam_x = int(player.x*2 - screen_width / 2)
-    cam_y = int(player.y*2 - screen_height / 2)
-
-    print(cam_x)
+    cam_x = int(player.x * 2 - screen_width / 2)
+    cam_y = int(player.y * 2 - screen_height / 2)
 
     fov_recompute = True
 

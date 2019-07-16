@@ -4,7 +4,7 @@ import textwrap
 from components.graphics import colors
 
 class Message:
-    def __init__(self, text, color=colors.get('light')):
+    def __init__(self, text, color=colors.get('dark')):
         self.text = text
         self.color = color
 
