@@ -1,4 +1,4 @@
-import libtcodpy as libtcod
+import tcod as libtcod
 
 from components.fighter import Fighter
 from components.graphics import colors,tiles
@@ -38,8 +38,8 @@ def main():
     anim_frame = 0
 
     # Size of the map
-    map_width = 80
-    map_height = 40
+    map_width = 120
+    map_height = 60
 
     # Some variables for the rooms in the map
     room_max_size = 10
@@ -72,6 +72,8 @@ def main():
 
     cam_x = int(player.x * 2 - screen_width / 2)
     cam_y = int(player.y * 2 - screen_height / 2)
+
+    print(cam_x)
 
     fov_recompute = True
 
