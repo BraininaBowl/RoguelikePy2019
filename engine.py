@@ -60,7 +60,7 @@ def main():
 
     libtcod.console_set_custom_font('sprite-font.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD, 32, 22)
 
-    libtcod.console_init_root(screen_width, screen_height, 'A bird underground', False)
+    libtcod.console_init_root(screen_width, screen_height, 'A bird underground', False, renderer="libtcod.RENDERER_SDL")
 
     load_customfont()
 
