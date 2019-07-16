@@ -12,9 +12,8 @@ def get_names_under_mouse(cam_x,cam_y,mouse, entities, fov_map):
     (x, y) = (mouse.cx+cam_x, mouse.cy+cam_y)
 
     names = [entity.name for entity in entities
-             if entity.x*2 == x and entity.y*2 == y and libtcod.map_is_in_fov(fov_map, entity.x, entity.y)]
+             if (entity.x*2 == x or entity.x*2+1 == x) and (entity.y*2 == y or entity.y*2+1 == y) and libtcod.map_is_in_fov(fov_map, entity.x, entity.y)]
     names = ', '.join(names)
-
     return names.capitalize()
 
 def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_color, text_color):
@@ -31,8 +30,10 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
     libtcod.console_print_ex(panel, int(x + total_width / 2), y, libtcod.BKGND_NONE, libtcod.CENTER, '{0}: {1}/{2}'.format(name, value, maximum))
 
 def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y,anim_frame):
+
     if fov_recompute:
-    # Draw all the tiles in the game map
+
+        # Draw all the tiles in the game map
         libtcod.console_set_default_foreground(con, libtcod.white)
         for y in range(game_map.height):
             for x in range(game_map.width):
@@ -98,8 +99,14 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
 
     render_bar(panel, 1, 1, bar_width, 'HP', player.fighter.hp, player.fighter.max_hp, colors.get('green'), colors.get('dark'), colors.get('light'))
 
+    libtcod.console_set_default_background(panel, colors.get('dark'))
+    libtcod.console_set_default_foreground(panel, libtcod.white)
+    for x in range(0,screen_width):
+        libtcod.console_put_char(panel, x, 0, tiles.get('gradient_tile'),libtcod.BKGND_SET)
+
     libtcod.console_set_default_foreground(panel, colors.get('dark'))
-    libtcod.console_print_ex(panel, 1, 0, libtcod.BKGND_NONE, libtcod.LEFT, get_names_under_mouse(cam_x,cam_y,mouse, entities, fov_map))
+    libtcod.console_set_default_background(panel, colors.get('light'))
+    libtcod.console_print_ex(panel, 1, 0, libtcod.BKGND_SET, libtcod.LEFT, get_names_under_mouse(cam_x,cam_y,mouse, entities, fov_map))
 
     libtcod.console_blit(panel, 0, 0, screen_width, panel_height, 0, 0, panel_y)
 

@@ -26,7 +26,7 @@ def main():
     screen_height = 40
 
     bar_width = 14
-    panel_height = 7
+    panel_height = 8
     panel_y = screen_height - panel_height
 
     message_x = bar_width + 2
@@ -59,8 +59,8 @@ def main():
     entities = [player]
 
     libtcod.console_set_custom_font('sprite-font.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD, 32, 22)
-
     libtcod.console_init_root(screen_width, screen_height, 'A bird underground', False)
+    libtcod.console_set_default_background(0, colors.get('dark'))
 
     load_customfont()
 
@@ -71,9 +71,7 @@ def main():
     game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room)
 
     cam_x = int(player.x * 2 - screen_width / 2)
-    cam_y = int(player.y * 2 - screen_height / 2)
-
-    print(cam_x)
+    cam_y = int(player.y*2 - (screen_height-panel_height)/2)
 
     fov_recompute = True
 
@@ -129,7 +127,7 @@ def main():
                 else:
                     player.move(dx, dy)
                     cam_x = int(player.x*2 - screen_width/2)
-                    cam_y = int(player.y*2 - screen_height/2)
+                    cam_y = int(player.y*2 - (screen_height-panel_height)/2)
                     fov_recompute = True
 
             else:
