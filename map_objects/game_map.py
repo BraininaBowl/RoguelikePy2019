@@ -3,11 +3,12 @@ import libtcodpy as libtcod
 from random import randint
 from components.ai import BasicMonster
 from components.fighter import Fighter
-from components.graphics import tiles
+from components.graphics import tiles, colors
 from components.item import Item
 from render_functions import RenderOrder
 from entity import Entity
-from item_functions import heal
+from game_messages import Message
+from item_functions import cast_confuse, cast_fireball, cast_lightning, heal
 from map_objects.rectangle import Rect
 from map_objects.tile import Tile
 
@@ -126,9 +127,27 @@ class GameMap:
             y = randint(room.y1 + 1, room.y2 - 1)
 
             if not any([entity for entity in entities if entity.x == x and entity.y == y]):
-                item_component = Item(use_function=heal, amount=4)
-                item = Entity(x, y, tiles.get('healingpotion_tile'), libtcod.white, 'Healing Potion', render_order=RenderOrder.ITEM, item=item_component)
+                item_chance = randint(0, 100)
 
+                if item_chance < 70:
+                    item_component = Item(use_function=heal, amount=4)
+                    item = Entity(x, y, tiles.get('healingpotion_tile'), libtcod.white, 'Healing Potion', render_order=RenderOrder.ITEM,
+                                  item=item_component)
+                elif item_chance < 80:
+                    item_component = Item(use_function=cast_fireball, targeting=True, targeting_message=Message(
+                        'Left-click a target tile for the fireball, or right-click to cancel.', colors.get('dark')),
+                                          damage=12, radius=3)
+                    item = Entity(x, y, tiles.get('scroll_tile'), libtcod.white, 'Fireball Scroll', render_order=RenderOrder.ITEM,
+                                  item=item_component)
+                elif item_chance < 90:
+                    item_component = Item(use_function=cast_confuse, targeting=True, targeting_message=Message(
+                        'Left-click an enemy to confuse it, or right-click to cancel.', colors.get('dark')))
+                    item = Entity(x, y, tiles.get('scroll_tile'), libtcod.white, 'Confusion Scroll', render_order=RenderOrder.ITEM,
+                                  item=item_component)
+                else:
+                    item_component = Item(use_function=cast_lightning, damage=20, maximum_range=5)
+                    item = Entity(x, y, tiles.get('scroll_tile'), libtcod.white, 'Lightning Scroll', render_order=RenderOrder.ITEM,
+                                  item=item_component)
                 entities.append(item)
 
     def is_blocked(self, x, y):
