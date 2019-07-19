@@ -54,6 +54,8 @@ def main():
     max_monsters_per_room = 3
     max_items_per_room = 2
 
+    radius = 0
+
     libtcod.sys_set_fps(30)
 
     fighter_component = Fighter(hp=30, defense=2, power=5)
