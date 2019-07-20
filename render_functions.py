@@ -47,45 +47,20 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
                         backcolor = colors.get('red')
                     else:
                         backcolor = colors.get('light')
+                    game_map.tiles[x][y].explored = True
                 else:
                     backcolor = colors.get('dark')
 
+                libtcod.console_set_char_background(con, x * 2, y * 2, backcolor, libtcod.BKGND_SET)
+                libtcod.console_set_char_background(con, x * 2 + 1, y * 2, backcolor, libtcod.BKGND_SET)
+                libtcod.console_set_char_background(con, x * 2, y * 2 + 1, backcolor, libtcod.BKGND_SET)
+                libtcod.console_set_char_background(con, x * 2 + 1, y * 2 + 1, backcolor, libtcod.BKGND_SET)
 
-                if visible:
-                    if game_state == GameStates.TARGETING and mouse.distance(x,y) <= radius:
-                        libtcod.console_set_char_background(con, x * 2, y * 2, colors.get('red'), libtcod.BKGND_SET)
-                        libtcod.console_set_char_background(con, x * 2 + 1, y * 2, colors.get('red'), libtcod.BKGND_SET)
-                        libtcod.console_set_char_background(con, x * 2, y * 2 + 1, colors.get('red'), libtcod.BKGND_SET)
-                        libtcod.console_set_char_background(con, x * 2 + 1, y * 2 + 1, colors.get('red'), libtcod.BKGND_SET)
-                    else:
-                        libtcod.console_set_char_background(con, x * 2, y * 2, colors.get('light'), libtcod.BKGND_SET)
-                        libtcod.console_set_char_background(con, x * 2 + 1, y * 2, colors.get('light'), libtcod.BKGND_SET)
-                        libtcod.console_set_char_background(con, x * 2, y * 2 + 1, colors.get('light'), libtcod.BKGND_SET)
-                        libtcod.console_set_char_background(con, x * 2 + 1, y * 2 + 1, colors.get('light'), libtcod.BKGND_SET)
-
-                    if wall:
-                        libtcod.console_put_char(con, x*2, y*2, tiles.get('wall_tile'), libtcod.BKGND_NONE)
-                        libtcod.console_put_char(con, x*2+1, y*2, tiles.get('wall_tile')+1, libtcod.BKGND_NONE)
-                        libtcod.console_put_char(con, x*2, y*2+1, tiles.get('wall_tile')+32, libtcod.BKGND_NONE)
-                        libtcod.console_put_char(con, x*2+1, y*2+1, tiles.get('wall_tile')+33, libtcod.BKGND_NONE)
-
-                    game_map.tiles[x][y].explored = True
-                elif game_map.tiles[x][y].explored:
-                    libtcod.console_set_char_background(con, x * 2, y * 2, colors.get('dark'), libtcod.BKGND_SET)
-                    libtcod.console_set_char_background(con, x * 2 + 1, y * 2, colors.get('dark'), libtcod.BKGND_SET)
-                    libtcod.console_set_char_background(con, x * 2, y * 2 + 1, colors.get('dark'), libtcod.BKGND_SET)
-                    libtcod.console_set_char_background(con, x * 2 + 1, y * 2 + 1, colors.get('dark'), libtcod.BKGND_SET)
-
-                    if wall:
-                        libtcod.console_put_char(con, x*2, y*2, tiles.get('wall_tile'), libtcod.BKGND_NONE)
-                        libtcod.console_put_char(con, x*2+1, y*2, tiles.get('wall_tile')+1, libtcod.BKGND_NONE)
-                        libtcod.console_put_char(con, x*2, y*2+1, tiles.get('wall_tile')+32, libtcod.BKGND_NONE)
-                        libtcod.console_put_char(con, x*2+1, y*2+1, tiles.get('wall_tile')+33, libtcod.BKGND_NONE)
-                else:
-                    libtcod.console_set_char_background(con, x*2, y*2, colors.get('dark'), libtcod.BKGND_SET)
-                    libtcod.console_set_char_background(con, x*2+1, y*2, colors.get('dark'), libtcod.BKGND_SET)
-                    libtcod.console_set_char_background(con, x*2, y*2+1, colors.get('dark'), libtcod.BKGND_SET)
-                    libtcod.console_set_char_background(con, x*2+1, y*2+1, colors.get('dark'), libtcod.BKGND_SET)
+                if (game_map.tiles[x][y].explored or visible) and wall:
+                    libtcod.console_put_char(con, x*2, y*2, tiles.get('wall_tile'), libtcod.BKGND_NONE)
+                    libtcod.console_put_char(con, x*2+1, y*2, tiles.get('wall_tile')+1, libtcod.BKGND_NONE)
+                    libtcod.console_put_char(con, x*2, y*2+1, tiles.get('wall_tile')+32, libtcod.BKGND_NONE)
+                    libtcod.console_put_char(con, x*2+1, y*2+1, tiles.get('wall_tile')+33, libtcod.BKGND_NONE)
 
     # Draw all entities in the list
 
