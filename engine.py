@@ -12,7 +12,6 @@ from input_handlers import handle_keys, handle_mouse
 from map_objects.game_map import GameMap
 from render_functions import clear_all, render_all, RenderOrder
 
-
 def load_customfont():
     # The index of the first custom tile in the file
     a = 256
@@ -66,6 +65,7 @@ def main():
     libtcod.console_set_custom_font('sprite-font.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD, 32, 22)
     libtcod.console_init_root(screen_width, screen_height, 'A bird underground', False)
     libtcod.console_set_default_background(0, colors.get('dark'))
+
 
     load_customfont()
 

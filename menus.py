@@ -13,15 +13,17 @@ def menu(con, header, options, width, screen_width, screen_height):
     window = libtcod.console_new(width, height)
 
     # print the header, with auto-wrap
-    libtcod.console_set_default_foreground(window, colors.get('light'))
-    libtcod.console_print_rect_ex(window, 0, 0, width, height, libtcod.BKGND_NONE, libtcod.LEFT, header)
+    libtcod.console_set_default_foreground(window, colors.get('dark'))
+    libtcod.console_set_default_background(window, colors.get('light'))
+    libtcod.console_clear(window)
+    libtcod.console_print_rect_ex(window, 0, 0, width, height, libtcod.BKGND_SET, libtcod.LEFT, header)
 
     # print all the options
     y = header_height
     letter_index = ord('a')
     for option_text in options:
         text = '(' + chr(letter_index) + ') ' + option_text
-        libtcod.console_print_ex(window, 0, y, libtcod.BKGND_NONE, libtcod.LEFT, text)
+        libtcod.console_print_ex(window, 0, y, libtcod.BKGND_SET, libtcod.LEFT, text)
         y += 1
         letter_index += 1
 

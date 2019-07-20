@@ -33,14 +33,23 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
 
 def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y,anim_frame, game_state):
 
-    if fov_recompute:
+    libtcod.console_clear(0)
 
+    if fov_recompute:
         # Draw all the tiles in the game map
         libtcod.console_set_default_foreground(con, libtcod.white)
         for y in range(game_map.height):
             for x in range(game_map.width):
                 visible = libtcod.map_is_in_fov(fov_map, x, y)
                 wall = game_map.tiles[x][y].block_sight
+                if visible:
+                    if game_state == GameStates.TARGETING and mouse.distance(x, y) <= radius:
+                        backcolor = colors.get('red')
+                    else:
+                        backcolor = colors.get('light')
+                else:
+                    backcolor = colors.get('dark')
+
 
                 if visible:
                     if game_state == GameStates.TARGETING and mouse.distance(x,y) <= radius:
