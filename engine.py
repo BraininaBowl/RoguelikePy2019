@@ -105,7 +105,7 @@ def main():
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
 
-        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height,map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y, anim_frame, game_state)
+        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height,map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y, anim_frame, game_state, targeting_item)
 
         fov_recompute = False
 

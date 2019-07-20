@@ -1,4 +1,5 @@
 import tcod as libtcod
+import math
 
 from components.graphics import colors, tiles
 from enum import Enum
@@ -9,6 +10,11 @@ class RenderOrder(Enum):
     CORPSE = 1
     ITEM = 2
     ACTOR = 3
+
+def distanceBetween(x1,y1,x2,y2):
+    dx = x1 - x2
+    dy = y1 - y2
+    return math.sqrt(dx ** 2 + dy ** 2)
 
 def get_names_under_mouse(cam_x,cam_y,mouse, entities, fov_map):
     (x, y) = (mouse.cx+cam_x, mouse.cy+cam_y)
@@ -31,11 +37,11 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
     libtcod.console_set_default_foreground(panel, text_color)
     libtcod.console_print_ex(panel, int(x + total_width / 2), y, libtcod.BKGND_NONE, libtcod.CENTER, '{0}: {1}/{2}'.format(name, value, maximum))
 
-def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y,anim_frame, game_state):
+def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y,anim_frame, game_state, targeting_item):
 
     libtcod.console_clear(0)
 
-    if fov_recompute:
+    if fov_recompute or game_state == GameStates.TARGETING:
         # Draw all the tiles in the game map
         libtcod.console_set_default_foreground(con, libtcod.white)
         for y in range(game_map.height):
@@ -43,8 +49,8 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
                 visible = libtcod.map_is_in_fov(fov_map, x, y)
                 wall = game_map.tiles[x][y].block_sight
                 if visible:
-                    if game_state == GameStates.TARGETING and mouse.distance(x, y) <= radius:
-                        backcolor = colors.get('red')
+                    if game_state == GameStates.TARGETING and distanceBetween(math.ceil((mouse.cx + cam_x)/2), math.ceil((mouse.cy + cam_y)/2), x, y) <= targeting_item.item.targeting_radius:
+                            backcolor = colors.get('red')
                     else:
                         backcolor = colors.get('light')
                     game_map.tiles[x][y].explored = True
@@ -67,7 +73,7 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
     entities_in_render_order = sorted(entities, key=lambda x: x.render_order.value)
 
     for entity in entities_in_render_order:
-        draw_entity(con, entity, fov_map,anim_frame)
+        draw_entity(con, entity, fov_map, anim_frame)
 
     libtcod.console_blit(con, 0,0,map_width*2, map_height*2, 0, -cam_x, -cam_y)
 
@@ -106,10 +112,10 @@ def clear_all(con, entities):
     for entity in entities:
         clear_entity(con, entity)
 
-def draw_entity(con, entity, fov_map,anim_frame):
+def draw_entity(con, entity, fov_map, anim_frame):
     if libtcod.map_is_in_fov(fov_map, entity.x, entity.y):
         libtcod.console_set_default_foreground(con, entity.color)
-        if entity.render_order == RenderOrder.CORPSE:
+        if entity.render_order == RenderOrder.CORPSE :
             sprite = entity.char+256
         else:
             sprite = entity.char+(64*anim_frame)

@@ -129,13 +129,13 @@ class GameMap:
             if not any([entity for entity in entities if entity.x == x and entity.y == y]):
                 item_chance = randint(0, 100)
 
-                if item_chance < 70:
+                if item_chance < 10:
                     item_component = Item(use_function=heal, amount=4)
                     item = Entity(x, y, tiles.get('healingpotion_tile'), libtcod.white, 'Healing Potion', render_order=RenderOrder.ITEM,
                                   item=item_component)
                 elif item_chance < 80:
                     item_component = Item(use_function=cast_fireball, targeting=True, targeting_message=Message(
-                        'Left-click a target tile for the fireball, or right-click to cancel.', colors.get('dark')),
+                        'Left-click a target tile for the fireball, or right-click to cancel.', colors.get('dark')), targeting_radius= 3,
                                           damage=12, radius=3)
                     item = Entity(x, y, tiles.get('scroll_tile'), libtcod.white, 'Fireball Scroll', render_order=RenderOrder.ITEM,
                                   item=item_component)
