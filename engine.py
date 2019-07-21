@@ -183,6 +183,7 @@ def main():
                 item_use_results = player.inventory.use(targeting_item, entities=entities, fov_map=fov_map,
                                                         target_x=target_x, target_y=target_y)
                 player_turn_results.extend(item_use_results)
+                fov_recompute = True
             elif right_click:
                 player_turn_results.append({'targeting_cancelled': True})
 
