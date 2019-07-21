@@ -1,16 +1,16 @@
 import tcod as libtcod
 
-from components.fighter import Fighter
-from components.graphics import colors,tiles
-from components.inventory import Inventory
+from components.graphics import colors
 from death_functions import kill_monster, kill_player
-from entity import Entity, get_blocking_entities_at_location
+from entity import get_blocking_entities_at_location
 from fov_functions import initialize_fov, recompute_fov
-from game_messages import MessageLog, Message
+from game_messages import Message
 from game_states import GameStates
-from input_handlers import handle_keys, handle_mouse
-from map_objects.game_map import GameMap
-from render_functions import clear_all, render_all, RenderOrder
+from input_handlers import handle_keys, handle_mouse, handle_main_menu
+from loader_functions.initialize_new_game import get_constants, get_game_variables
+from loader_functions.data_loaders import load_game, save_game
+from menus import main_menu, message_box
+from render_functions import clear_all, render_all
 
 def load_customfont():
     # The index of the first custom tile in the file
@@ -21,68 +21,16 @@ def load_customfont():
         libtcod.console_map_ascii_codes_to_font(a, 32, 0, y)
         a += 32
 
-def main():
-    screen_width = 80
-    screen_height = 40
+def update_cam(player, constants):
+    cam_x = int(player.x * 2 - constants['screen_width'] / 2)
+    cam_y = int(player.y * 2 - (constants['screen_height'] - constants['panel_height']) / 2)
 
-    bar_width = 14
-    panel_height = 8
-    panel_y = screen_height - panel_height
+    return cam_x,cam_y
 
-    message_x = bar_width + 2
-    message_width = screen_width - bar_width - 2
-    message_height = panel_height - 1
-
-    # Animate
-    anim_time = libtcod.sys_elapsed_milli()
-    anim_frame = 0
-
-    # Size of the map
-    map_width = 120
-    map_height = 60
-
-    # Some variables for the rooms in the map
-    room_max_size = 10
-    room_min_size = 6
-    max_rooms = 40
-
-    fov_algorithm = 0
-    fov_light_walls = True
-    fov_radius = 10
-
-    max_monsters_per_room = 3
-    max_items_per_room = 2
-
-    radius = 0
-
-    libtcod.sys_set_fps(30)
-
-    fighter_component = Fighter(hp=30, defense=2, power=5)
-    inventory_component = Inventory(26)
-    player = Entity(0, 0, tiles.get('player_tile'), libtcod.white, 'Player', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, inventory=inventory_component)
-    entities = [player]
-
-    libtcod.console_set_custom_font('sprite-font.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD, 32, 22)
-    libtcod.console_init_root(screen_width, screen_height, 'A bird underground', False)
-    libtcod.console_set_default_background(0, colors.get('dark'))
-
-
-    load_customfont()
-
-    con = libtcod.console_new(map_width*2, map_height*2)
-    panel = libtcod.console_new(screen_width, panel_height)
-
-    game_map = GameMap(map_width, map_height)
-    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room, max_items_per_room)
-
-    cam_x = int(player.x * 2 - screen_width / 2)
-    cam_y = int(player.y*2 - (screen_height-panel_height)/2)
+def play_game(player, entities, game_map, message_log, game_state, con, panel, constants, cam_x, cam_y, anim_frame, anim_time):
 
     fov_recompute = True
-
     fov_map = initialize_fov(game_map)
-
-    message_log = MessageLog(message_x, message_width, message_height)
 
     key = libtcod.Key()
     mouse = libtcod.Mouse()
@@ -93,19 +41,20 @@ def main():
     targeting_item = None
 
     while not libtcod.console_is_window_closed():
-        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS | libtcod.EVENT_MOUSE, key, mouse)
-
         if libtcod.sys_elapsed_milli() - anim_time > 200:
             anim_time = libtcod.sys_elapsed_milli()
             if anim_frame < 3:
                 anim_frame += 1
             else:
                 anim_frame = 0
+            print(anim_frame)
+
+        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS | libtcod.EVENT_MOUSE, key, mouse)
 
         if fov_recompute:
-            recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
+            recompute_fov(fov_map, player.x, player.y, constants['fov_radius'], constants['fov_light_walls'], constants['fov_algorithm'])
 
-        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height,map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y, anim_frame, game_state, targeting_item)
+        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, constants['screen_width'], constants['screen_height'], constants['map_width'], constants['map_height'], constants['bar_width'], constants['panel_height'], constants['panel_y'], mouse, colors, cam_x, cam_y, anim_frame, game_state, targeting_item)
 
         fov_recompute = False
 
@@ -142,8 +91,7 @@ def main():
                     player_turn_results.extend(attack_results)
                 else:
                     player.move(dx, dy)
-                    cam_x = int(player.x*2 - screen_width/2)
-                    cam_y = int(player.y*2 - (screen_height-panel_height)/2)
+                    cam_x, cam_y = update_cam(player, constants)
                     fov_recompute = True
 
             else:
@@ -186,6 +134,7 @@ def main():
                 fov_recompute = True
             elif right_click:
                 player_turn_results.append({'targeting_cancelled': True})
+                fov_recompute = True
 
         if exit:
             if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY):
@@ -193,6 +142,7 @@ def main():
             elif game_state == GameStates.TARGETING:
                 player_turn_results.append({'targeting_cancelled': True})
             else:
+                save_game(player, entities, game_map, message_log, game_state)
                 return True
 
         if fullscreen:
@@ -212,8 +162,8 @@ def main():
 
             if targeting_cancelled:
                 game_state = previous_game_state
-
                 message_log.add_message(Message('Targeting cancelled'))
+                fov_recompute = True
 
             if dead_entity:
                 if dead_entity == player:
@@ -272,6 +222,83 @@ def main():
 
             else:
                 game_state = GameStates.PLAYERS_TURN
+
+
+
+def main():
+    constants = get_constants()
+
+    libtcod.sys_set_fps(30)
+
+    # Animate
+    anim_time = libtcod.sys_elapsed_milli()
+    anim_frame = 0
+
+    libtcod.console_set_custom_font('sprite-font.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD, 32, 22)
+    libtcod.console_init_root(constants['screen_width'], constants['screen_height'], constants['window_title'], False)
+    libtcod.console_set_default_background(0, colors.get('dark'))
+
+    load_customfont()
+
+    con = libtcod.console_new(constants['map_width']*2, constants['map_height']*2)
+    panel = libtcod.console_new(constants['screen_width'], constants['panel_height'])
+
+    player = None
+    entities = []
+    game_map = None
+    message_log = None
+    game_state = None
+
+    show_main_menu = True
+    show_load_error_message = False
+
+    main_menu_background_image = libtcod.image_load('menu_background.png')
+
+    key = libtcod.Key()
+    mouse = libtcod.Mouse()
+
+    while not libtcod.console_is_window_closed():
+
+        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS | libtcod.EVENT_MOUSE, key, mouse)
+
+
+        if show_main_menu:
+            main_menu(con, main_menu_background_image, constants['screen_width'],
+                      constants['screen_height'], constants['window_title'])
+
+            if show_load_error_message:
+                message_box(con, 'No save game to load', 50, constants['screen_width'], constants['screen_height'])
+
+            libtcod.console_flush()
+
+            action = handle_main_menu(key)
+
+            new_game = action.get('new_game')
+            load_saved_game = action.get('load_game')
+            exit_game = action.get('exit')
+
+            if show_load_error_message and (new_game or load_saved_game or exit_game):
+                show_load_error_message = False
+            elif new_game:
+                player, entities, game_map, message_log, game_state = get_game_variables(constants)
+                game_state = GameStates.PLAYERS_TURN
+
+                show_main_menu = False
+            elif load_saved_game:
+                try:
+                    player, entities, game_map, message_log, game_state = load_game()
+                    show_main_menu = False
+                except FileNotFoundError:
+                    show_load_error_message = True
+            elif exit_game:
+                break
+
+        else:
+            libtcod.console_clear(con)
+            cam_x, cam_y = update_cam(player, constants)
+            play_game(player, entities, game_map, message_log, game_state, con, panel, constants, cam_x, cam_y, anim_frame, anim_time)
+
+            show_main_menu = True
 
 
 if __name__ == '__main__':
