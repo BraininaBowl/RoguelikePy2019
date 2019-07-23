@@ -7,9 +7,10 @@ from game_states import GameStates
 from menus import inventory_menu
 
 class RenderOrder(Enum):
-    CORPSE = 1
-    ITEM = 2
-    ACTOR = 3
+    STAIRS = 1
+    CORPSE = 2
+    ITEM = 3
+    ACTOR = 4
 
 def distanceBetween(x1,y1,x2,y2):
     dx = x1 - x2
@@ -49,7 +50,7 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
                 visible = libtcod.map_is_in_fov(fov_map, x, y)
                 wall = game_map.tiles[x][y].block_sight
                 if visible:
-                    if game_state == GameStates.TARGETING and distanceBetween(math.ceil((mouse.cx + cam_x)/2), math.ceil((mouse.cy + cam_y)/2), x, y) <= targeting_item.item.targeting_radius:
+                    if game_state == GameStates.TARGETING and distanceBetween(math.floor((mouse.cx + cam_x)/2), math.ceil((mouse.cy + cam_y)/2), x, y) <= targeting_item.item.targeting_radius:
                             backcolor = colors.get('red')
                     else:
                         backcolor = colors.get('light')
@@ -73,7 +74,7 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
     entities_in_render_order = sorted(entities, key=lambda x: x.render_order.value)
 
     for entity in entities_in_render_order:
-        draw_entity(con, entity, fov_map, anim_frame)
+        draw_entity(con, entity, fov_map, anim_frame, game_map, game_state)
 
     libtcod.console_blit(con, 0,0,map_width*2, map_height*2, 0, -cam_x, -cam_y)
 
@@ -112,11 +113,13 @@ def clear_all(con, entities):
     for entity in entities:
         clear_entity(con, entity)
 
-def draw_entity(con, entity, fov_map, anim_frame):
-    if libtcod.map_is_in_fov(fov_map, entity.x, entity.y):
+def draw_entity(con, entity, fov_map, anim_frame, game_map, game_state):
+    if libtcod.map_is_in_fov(fov_map, entity.x, entity.y) or (entity.stairs and game_map.tiles[entity.x][entity.y].explored):
         libtcod.console_set_default_foreground(con, entity.color)
-        if entity.render_order == RenderOrder.CORPSE :
+        if entity.render_order == RenderOrder.CORPSE or (game_state == GameStates.PLAYER_DEAD and entity.render_order == RenderOrder.ACTOR):
             sprite = entity.char+256
+        elif entity.stairs:
+            sprite = entity.char
         else:
             sprite = entity.char+(64*anim_frame)
         libtcod.console_put_char(con, entity.x * 2, entity.y * 2, sprite, libtcod.BKGND_NONE)

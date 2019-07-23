@@ -8,7 +8,7 @@ from game_states import GameStates
 
 def kill_player(player):
     #player.char = '%'
-    player.color = colors.get('dark')
+    #player.color = colors.get('dark')
     return Message('You died!', colors.get('light')), GameStates.PLAYER_DEAD
 
 
