@@ -21,6 +21,16 @@ def load_customfont():
         libtcod.console_map_ascii_codes_to_font(a, 32, 0, y)
         a += 32
 
+def animation (anim_frame, anim_time):
+    if libtcod.sys_elapsed_milli() - anim_time > 200:
+        anim_time = libtcod.sys_elapsed_milli()
+        if anim_frame < 3:
+            anim_frame += 1
+        else:
+            anim_frame = 0
+    return anim_frame, anim_time
+
+
 def update_cam(player, constants):
     cam_x = int(player.x * 2 - constants['screen_width'] / 2)
     cam_y = int(player.y * 2 - (constants['screen_height'] - constants['panel_height']) / 2)
@@ -41,13 +51,7 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
     targeting_item = None
 
     while not libtcod.console_is_window_closed():
-        if libtcod.sys_elapsed_milli() - anim_time > 200:
-            anim_time = libtcod.sys_elapsed_milli()
-            if anim_frame < 3:
-                anim_frame += 1
-            else:
-                anim_frame = 0
-            print(anim_frame)
+        anim_frame, anim_time = animation(anim_frame,anim_time)
 
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS | libtcod.EVENT_MOUSE, key, mouse)
 
@@ -252,15 +256,28 @@ def main():
     show_main_menu = True
     show_load_error_message = False
 
-    main_menu_background_image = libtcod.image_load('menu_background.png')
+    main_menu_background_image_0 = libtcod.image_load('menu_background_0.png')
+    main_menu_background_image_1 = libtcod.image_load('menu_background_1.png')
+    main_menu_background_image_2 = libtcod.image_load('menu_background_2.png')
+    main_menu_background_image_3 = libtcod.image_load('menu_background_3.png')
 
     key = libtcod.Key()
     mouse = libtcod.Mouse()
 
     while not libtcod.console_is_window_closed():
 
-        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS | libtcod.EVENT_MOUSE, key, mouse)
+        anim_frame, anim_time = animation(anim_frame, anim_time)
 
+        if anim_frame == 0:
+            main_menu_background_image = main_menu_background_image_0
+        elif anim_frame == 1:
+            main_menu_background_image = main_menu_background_image_1
+        elif anim_frame == 2:
+            main_menu_background_image = main_menu_background_image_2
+        else:
+            main_menu_background_image = main_menu_background_image_3
+
+        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS | libtcod.EVENT_MOUSE, key, mouse)
 
         if show_main_menu:
             main_menu(con, main_menu_background_image, constants['screen_width'],

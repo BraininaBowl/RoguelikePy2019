@@ -20,5 +20,5 @@ colors = {
     'dark': libtcod.Color(53, 52, 42),
     'light': libtcod.Color(211, 210, 203),
     'green': libtcod.Color(77, 97, 60),
-    'red': libtcod.Color(155, 55, 55)
+    'red': libtcod.Color(170, 61, 61)
 }
