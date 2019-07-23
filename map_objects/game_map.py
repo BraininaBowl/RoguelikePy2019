@@ -123,11 +123,11 @@ class GameMap:
             # Check if an entity is already in that location
             if not any([entity for entity in entities if entity.x == x and entity.y == y]):
                 if randint(0, 100) < 80:
-                    fighter_component = Fighter(hp=10, defense=0, power=3)
+                    fighter_component = Fighter(hp=10, defense=0, power=3, xp=35)
                     ai_component = BasicMonster()
                     monster = Entity(x, y, tiles.get('orc_tile'), libtcod.white, 'Orc', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
                 else:
-                    fighter_component = Fighter(hp=16, defense=1, power=4)
+                    fighter_component = Fighter(hp=16, defense=1, power=4, xp=100)
                     ai_component = BasicMonster()
                     monster = Entity(x, y, tiles.get('troll_tile'), libtcod.white, 'Troll', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
 
@@ -168,3 +168,18 @@ class GameMap:
             return True
 
         return False
+
+    def next_floor(self, player, message_log, constants):
+        self.dungeon_level += 1
+        entities = [player]
+
+        self.tiles = self.initialize_tiles()
+        self.make_map(constants['max_rooms'], constants['room_min_size'], constants['room_max_size'],
+                      constants['map_width'], constants['map_height'], player, entities,
+                      constants['max_monsters_per_room'], constants['max_items_per_room'])
+
+        player.fighter.heal(player.fighter.max_hp // 2)
+
+        message_log.add_message(Message('You take a moment to rest, and recover your strength.', colors.get('green')))
+
+        return entities
