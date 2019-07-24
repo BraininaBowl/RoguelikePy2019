@@ -2,7 +2,7 @@ import tcod as libtcod
 
 from components.graphics import colors
 
-def menu(con, header, options, width, screen_width, screen_height):
+def menu(con, header, options, width, screen_width, screen_height, background = 'light', foreground = 'dark'):
     if len(options) > 26: raise ValueError('Cannot have a menu with more than 26 options.')
 
     # calculate total height for the header (after auto-wrap) and one line per option
@@ -13,8 +13,8 @@ def menu(con, header, options, width, screen_width, screen_height):
     window = libtcod.console_new(width, height)
 
     # print the header, with auto-wrap
-    libtcod.console_set_default_foreground(window, colors.get('dark'))
-    libtcod.console_set_default_background(window, colors.get('light'))
+    libtcod.console_set_default_foreground(window, colors.get(foreground))
+    libtcod.console_set_default_background(window, colors.get(background))
     libtcod.console_clear(window)
     libtcod.console_print_rect_ex(window, 0, 0, width, height, libtcod.BKGND_SET, libtcod.LEFT, header)
 
@@ -45,11 +45,11 @@ def main_menu(con, background_image, screen_width, screen_height, window_title):
     libtcod.image_blit_2x(background_image, 0, 0, 0)
 
     libtcod.console_set_default_foreground(0, colors.get('light'))
-    libtcod.console_print_ex(0, int(screen_width / 2), int(screen_height / 2) - 4, libtcod.BKGND_NONE, libtcod.CENTER, window_title)
-    libtcod.console_print_ex(0, int(screen_width / 2), int(screen_height - 2), libtcod.BKGND_NONE, libtcod.CENTER,
+    libtcod.console_print_ex(0, 4, int(screen_height / 2) - 4, libtcod.BKGND_NONE, libtcod.LEFT, window_title)
+    libtcod.console_print_ex(0, 4, int(screen_height - 2), libtcod.BKGND_NONE, libtcod.LEFT,
                              'By (Your name here)')
 
-    menu(con, '', ['Play a new game', 'Continue last game', 'Quit'], 24, screen_width, screen_height)
+    menu(con, '', ['Play a new game', 'Continue last game', 'Quit'], int(screen_width/2)-8, int(screen_width/2), screen_height, 'dark', 'light')
 
 def level_up_menu(con, header, player, menu_width, screen_width, screen_height):
     options = ['Constitution (+20 HP, from {0})'.format(player.fighter.max_hp),
