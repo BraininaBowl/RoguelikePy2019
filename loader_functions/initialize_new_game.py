@@ -28,13 +28,13 @@ def get_constants():
     message_height = panel_height - 1
 
     # Size of the map
-    map_width = 120
-    map_height = 60
+    map_width = 80
+    map_height = 40
 
     # Some variables for the rooms in the map
     room_max_size = 10
     room_min_size = 6
-    max_rooms = 40
+    max_rooms = 20
 
     fov_algorithm = 0
     fov_light_walls = True
@@ -79,7 +79,7 @@ def get_game_variables(constants):
     entities = [player]
 
     equippable_component = Equippable(EquipmentSlots.MAIN_HAND, power_bonus=2)
-    dagger = Entity(0, 0, tiles.get('dagger_tile'), libtcod.white, 'Dagger', equippable=equippable_component)
+    dagger = Entity(0, 0, tiles.get('dagger_tile'), libtcod.white, 'Dagger', render_order=RenderOrder.ITEM, equippable=equippable_component)
     player.inventory.add_item(dagger)
     player.equipment.toggle_equip(dagger)
 
