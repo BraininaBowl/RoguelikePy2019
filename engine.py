@@ -17,7 +17,7 @@ def load_customfont():
     a = 256
 
     # The "y" is the row index, here we load the sixth row in the font file. Increase the "6" to load any new rows from the file
-    for y in range(5, 18):
+    for y in range(5, 46):
         libtcod.console_map_ascii_codes_to_font(a, 32, 0, y)
         a += 32
 
@@ -300,7 +300,7 @@ def main():
     anim_time = libtcod.sys_elapsed_milli()
     anim_frame = 0
 
-    libtcod.console_set_custom_font('sprite-font.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD, 32, 22)
+    libtcod.console_set_custom_font('sprite-font.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD, 32, 48)
     libtcod.console_init_root(constants['screen_width'], constants['screen_height'], constants['window_title'], False)
     libtcod.console_set_default_background(0, colors.get('dark'))
 

@@ -127,8 +127,8 @@ class GameMap:
 
         item_chances = {
             'healing_potion': 35,
-            'sword': from_dungeon_level([[50, 1]], self.dungeon_level),
-            'shield': from_dungeon_level([[50, 1]], self.dungeon_level),
+            'sword': from_dungeon_level([[10, 4]], self.dungeon_level),
+            'shield': from_dungeon_level([[10, 6]], self.dungeon_level),
             'lightning_scroll': from_dungeon_level([[25, 4]], self.dungeon_level),
             'fireball_scroll': from_dungeon_level([[25, 6]], self.dungeon_level),
             'confusion_scroll': from_dungeon_level([[10, 2]], self.dungeon_level)

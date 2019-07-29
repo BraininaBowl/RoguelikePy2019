@@ -14,7 +14,7 @@ from map_objects.game_map import GameMap
 from render_functions import RenderOrder
 
 def get_constants():
-    window_title = 'Roguelike Tutorial Revised'
+    window_title = 'Rogue 0451'
     screen_width = 80
     screen_height = 40
 

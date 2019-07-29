@@ -76,7 +76,7 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
     for entity in entities_in_render_order:
         draw_entity(con, entity, fov_map, anim_frame, game_map, game_state)
 
-    libtcod.console_blit(con, 0,0,map_width*2, map_height*2, 0, -cam_x, -cam_y)
+    libtcod.console_blit(con, 0,0,map_width*2, map_height*2, 0, -cam_x, -cam_y,1,1)
 
     libtcod.console_set_default_background(panel, colors.get('light'))
     libtcod.console_clear(panel)
@@ -135,7 +135,6 @@ def draw_entity(con, entity, fov_map, anim_frame, game_map, game_state):
         libtcod.console_put_char(con, entity.x * 2+1, entity.y * 2, sprite+1, libtcod.BKGND_NONE)
         libtcod.console_put_char(con, entity.x * 2, entity.y * 2+1, sprite+32, libtcod.BKGND_NONE)
         libtcod.console_put_char(con, entity.x * 2+1, entity.y * 2+1, sprite+33, libtcod.BKGND_NONE)
-
 
 def clear_entity(con, entity):
     # erase the character that represents this object
