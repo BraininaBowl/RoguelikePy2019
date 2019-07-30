@@ -14,7 +14,7 @@ from map_objects.game_map import GameMap
 from render_functions import RenderOrder
 
 def get_constants():
-    window_title = 'Rogue 0451'
+    window_title = 'Rogue 451'
     screen_width = 80
     screen_height = 40
 
@@ -74,12 +74,12 @@ def get_game_variables(constants):
     inventory_component = Inventory(26)
     equipment_component = Equipment()
     level_component = Level()
-    player = Entity(0, 0, tiles.get('player_tile'), libtcod.white, 'Player', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, inventory=inventory_component, level=level_component,
+    player = Entity(0, 0, tiles.get('player_tile'), libtcod.white, 'you', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, inventory=inventory_component, level=level_component,
                     equipment=equipment_component)
     entities = [player]
 
     equippable_component = Equippable(EquipmentSlots.MAIN_HAND, power_bonus=2)
-    dagger = Entity(0, 0, tiles.get('dagger_tile'), libtcod.white, 'Dagger', render_order=RenderOrder.ITEM, equippable=equippable_component)
+    dagger = Entity(0, 0, tiles.get('dagger_tile'), libtcod.white, 'Dagger', render_order=RenderOrder.ITEM, equippable=equippable_component, sprite_main_shift=320)
     player.inventory.add_item(dagger)
     player.equipment.toggle_equip(dagger)
 

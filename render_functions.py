@@ -125,16 +125,29 @@ def clear_all(con, entities):
 def draw_entity(con, entity, fov_map, anim_frame, game_map, game_state):
     if libtcod.map_is_in_fov(fov_map, entity.x, entity.y) or (entity.stairs and game_map.tiles[entity.x][entity.y].explored):
         libtcod.console_set_default_foreground(con, entity.color)
-        if entity.render_order == RenderOrder.CORPSE or (game_state == GameStates.PLAYER_DEAD and entity.render_order == RenderOrder.ACTOR):
-            sprite = entity.char+256
+        if entity.render_order == RenderOrder.CORPSE or (game_state == GameStates.PLAYER_DEAD and entity.name == "you"):
+            sprite_main = entity.char+256
+            sprite_off = sprite_main+1
         elif entity.stairs:
-            sprite = entity.char
+            sprite_main = entity.char
+            sprite_off = sprite_main+1
+        elif entity.equipment:
+            if entity.equipment.main_hand:
+                sprite_main = entity.char+(64*anim_frame) + entity.equipment.main_hand.sprite_main_shift
+            else:
+                sprite_main = entity.char+(64*anim_frame)
+            if entity.equipment.off_hand:
+                sprite_off = entity.char+(64*anim_frame) + 1 + entity.equipment.off_hand.sprite_off_shift
+            else:
+                sprite_off = entity.char+(64*anim_frame) + 1
+
         else:
-            sprite = entity.char+(64*anim_frame)
-        libtcod.console_put_char(con, entity.x * 2, entity.y * 2, sprite, libtcod.BKGND_NONE)
-        libtcod.console_put_char(con, entity.x * 2+1, entity.y * 2, sprite+1, libtcod.BKGND_NONE)
-        libtcod.console_put_char(con, entity.x * 2, entity.y * 2+1, sprite+32, libtcod.BKGND_NONE)
-        libtcod.console_put_char(con, entity.x * 2+1, entity.y * 2+1, sprite+33, libtcod.BKGND_NONE)
+            sprite_main = entity.char+(64*anim_frame)
+            sprite_off = sprite_main + 1
+        libtcod.console_put_char(con, entity.x * 2, entity.y * 2, sprite_main, libtcod.BKGND_NONE)
+        libtcod.console_put_char(con, entity.x * 2+1, entity.y * 2, sprite_off, libtcod.BKGND_NONE)
+        libtcod.console_put_char(con, entity.x * 2, entity.y * 2+1, sprite_main+32, libtcod.BKGND_NONE)
+        libtcod.console_put_char(con, entity.x * 2+1, entity.y * 2+1, sprite_off+32, libtcod.BKGND_NONE)
 
 def clear_entity(con, entity):
     # erase the character that represents this object
