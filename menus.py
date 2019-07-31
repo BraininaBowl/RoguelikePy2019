@@ -51,13 +51,9 @@ def inventory_menu(con, header, player, inventory_width, screen_width, screen_he
 
 def main_menu(con, background_image, screen_width, screen_height, window_title):
     libtcod.image_blit_2x(background_image, 0, 0, 0)
-
     libtcod.console_set_default_foreground(0, colors.get('light'))
-    libtcod.console_print_ex(0, 4, int(screen_height / 2) - 4, libtcod.BKGND_NONE, libtcod.LEFT, window_title)
-    libtcod.console_print_ex(0, 4, int(screen_height - 2), libtcod.BKGND_NONE, libtcod.LEFT,
-                             'By (Your name here)')
 
-    menu(con, '', ['Play a new game', 'Continue last game', 'Quit'], int(screen_width/2)-8, int(screen_width/2), screen_height, 'dark', 'light')
+    menu(con, window_title, ['Play a new game', 'Continue last game', 'Quit'], int(screen_width/2)-8, int(screen_width/2), screen_height, 'dark', 'light')
 
 def level_up_menu(con, header, player, menu_width, screen_width, screen_height):
     options = ['Constitution (+20 HP, from {0})'.format(player.fighter.max_hp),

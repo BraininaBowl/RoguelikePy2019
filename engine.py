@@ -37,7 +37,7 @@ def update_cam(player, constants):
 
     return cam_x,cam_y
 
-def play_game(player, entities, game_map, message_log, game_state, con, panel, constants, cam_x, cam_y, anim_frame, anim_time):
+def play_game(player, entities, game_map, message_log, game_state, con, panel, tooltip, constants, cam_x, cam_y, anim_frame, anim_time):
 
     fov_recompute = True
     fov_map = initialize_fov(game_map)
@@ -58,7 +58,7 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, constants['fov_radius'], constants['fov_light_walls'], constants['fov_algorithm'])
 
-        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, constants['screen_width'], constants['screen_height'], constants['map_width'], constants['map_height'], constants['bar_width'], constants['panel_height'], constants['panel_y'], mouse, colors, cam_x, cam_y, anim_frame, game_state, targeting_item)
+        render_all(con, panel, tooltip, entities, player, game_map, fov_map, fov_recompute, message_log, constants['screen_width'], constants['screen_height'], constants['map_width'], constants['map_height'], constants['bar_width'], constants['panel_height'], constants['panel_y'], mouse, colors, cam_x, cam_y, anim_frame, game_state, targeting_item)
 
         fov_recompute = False
 
@@ -308,6 +308,7 @@ def main():
 
     con = libtcod.console_new(constants['map_width']*2, constants['map_height']*2)
     panel = libtcod.console_new(constants['screen_width'], constants['panel_height'])
+    tooltip = libtcod.console_new(constants['screen_width'], 1)
 
     player = None
     entities = []
@@ -375,7 +376,7 @@ def main():
         else:
             libtcod.console_clear(con)
             cam_x, cam_y = update_cam(player, constants)
-            play_game(player, entities, game_map, message_log, game_state, con, panel, constants, cam_x, cam_y, anim_frame, anim_time)
+            play_game(player, entities, game_map, message_log, game_state, con, panel, tooltip, constants, cam_x, cam_y, anim_frame, anim_time)
 
             show_main_menu = True
 

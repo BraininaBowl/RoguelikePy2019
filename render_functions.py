@@ -19,7 +19,6 @@ def distanceBetween(x1,y1,x2,y2):
 
 def get_names_under_mouse(cam_x,cam_y,mouse, entities, fov_map):
     (x, y) = (mouse.cx+cam_x, mouse.cy+cam_y)
-
     names = [entity.name for entity in entities
              if (entity.x*2 == x or entity.x*2+1 == x) and (entity.y*2 == y or entity.y*2+1 == y) and libtcod.map_is_in_fov(fov_map, entity.x, entity.y)]
     names = ', '.join(names)
@@ -38,7 +37,7 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
     libtcod.console_set_default_foreground(panel, text_color)
     libtcod.console_print_ex(panel, x, y, libtcod.BKGND_NONE, libtcod.LEFT, '{0}: {1}/{2}'.format(name, value, maximum))
 
-def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y,anim_frame, game_state, targeting_item):
+def render_all(con, panel, tooltip, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y,anim_frame, game_state, targeting_item):
 
     libtcod.console_clear(0)
 
@@ -100,9 +99,22 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
 
     libtcod.console_set_default_foreground(panel, colors.get('dark'))
     libtcod.console_set_default_background(panel, colors.get('light'))
-    libtcod.console_print_ex(panel, 1, 0, libtcod.BKGND_SET, libtcod.LEFT, get_names_under_mouse(cam_x,cam_y,mouse, entities, fov_map))
 
     libtcod.console_blit(panel, 0, 0, screen_width, panel_height, 0, 0, panel_y)
+
+    libtcod.console_set_default_foreground(tooltip, colors.get('light'))
+    libtcod.console_set_default_background(tooltip, colors.get('dark'))
+    tooltip_text = get_names_under_mouse(cam_x,cam_y,mouse, entities, fov_map)
+    tooltip_len = len(tooltip_text)
+    libtcod.console_set_default_background(tooltip, libtcod.black)
+    libtcod.console_clear(tooltip)
+    libtcod.console_set_default_foreground(tooltip, colors.get('light'))
+    libtcod.console_set_default_background(tooltip, colors.get('dark'))
+    libtcod.console_print_ex(tooltip, 0, 0, libtcod.BKGND_SET, libtcod.LEFT, tooltip_text)
+
+    libtcod.console_set_key_color(tooltip,libtcod.black)
+    libtcod.console_blit(tooltip, 0,0, tooltip_len, 1, 0, mouse.cx + 2, mouse.cy + 1)
+
 
     if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY):
         if game_state == GameStates.SHOW_INVENTORY:
