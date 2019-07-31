@@ -36,7 +36,7 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
         libtcod.console_rect(panel, x, y, bar_width, 1, False, libtcod.BKGND_SET)
 
     libtcod.console_set_default_foreground(panel, text_color)
-    libtcod.console_print_ex(panel, int(x + total_width / 2), y, libtcod.BKGND_NONE, libtcod.CENTER, '{0}: {1}/{2}'.format(name, value, maximum))
+    libtcod.console_print_ex(panel, x, y, libtcod.BKGND_NONE, libtcod.LEFT, '{0}: {1}/{2}'.format(name, value, maximum))
 
 def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y,anim_frame, game_state, targeting_item):
 
@@ -88,7 +88,7 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
         libtcod.console_print_ex(panel, message_log.x, y, libtcod.BKGND_NONE, libtcod.LEFT, message.text)
         y += 1
 
-    render_bar(panel, 1, 1, bar_width, 'HP', player.fighter.hp, player.fighter.max_hp, colors.get('green'), colors.get('dark'), colors.get('light'))
+    render_bar(panel, 1, 1, bar_width, 'Health', player.fighter.hp, player.fighter.max_hp, colors.get('green'), colors.get('dark'), colors.get('light'))
     libtcod.console_set_default_foreground(panel, colors.get('dark'))
     libtcod.console_print_ex(panel, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT,
                              'Dungeon level: {0}'.format(game_map.dungeon_level))
@@ -106,9 +106,9 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
 
     if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY):
         if game_state == GameStates.SHOW_INVENTORY:
-            inventory_title = 'Press the key next to an item to use it, or Esc to cancel.\n'
+            inventory_title = 'Use or equip item.\n'
         else:
-            inventory_title = 'Press the key next to an item to drop it, or Esc to cancel.\n'
+            inventory_title = 'Drop an item.\n'
 
         inventory_menu(con, inventory_title, player, 50, screen_width, screen_height)
 

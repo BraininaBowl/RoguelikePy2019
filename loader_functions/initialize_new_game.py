@@ -79,6 +79,7 @@ def get_game_variables(constants):
     entities = [player]
 
     equippable_component = Equippable(EquipmentSlots.MAIN_HAND, power_bonus=2)
+#godmode    equippable_component = Equippable(EquipmentSlots.MAIN_HAND, power_bonus=800, defense_bonus=800)
     dagger = Entity(0, 0, tiles.get('dagger_tile'), libtcod.white, 'Dagger', render_order=RenderOrder.ITEM, equippable=equippable_component, sprite_main_shift=320)
     player.inventory.add_item(dagger)
     player.equipment.toggle_equip(dagger)

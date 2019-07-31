@@ -1,5 +1,6 @@
 import tcod as libtcod
 
+
 from game_messages import Message
 from components.graphics import colors
 
@@ -8,7 +9,7 @@ class Inventory:
         self.capacity = capacity
         self.items = []
 
-    def add_item(self, item):
+    def add_item(self, item_to_add):
         results = []
 
         if len(self.items) >= self.capacity:
@@ -18,11 +19,19 @@ class Inventory:
                 })
         else:
             results.append({
-                'item_added': item,
-                'message': Message('You pick up the {0}!'.format(item.name), colors.get('green'))
+                'item_added': item_to_add,
+                'message': Message('You pick up {0} {1}!'.format(item_to_add.number,item_to_add.name), colors.get('green'))
             })
 
-            self.items.append(item)
+
+            item_added = False
+            for item in self.items:
+                if item.name == item_to_add.name:
+                    item.number += item_to_add.number
+                    item_added = True
+
+            if not item_added:
+                self.items.append(item_to_add)
 
         return results
 
@@ -54,7 +63,10 @@ class Inventory:
         return results
 
     def remove_item(self, item):
-        self.items.remove(item)
+        if item.number > 1:
+            item.number -= 1
+        else:
+            self.items.remove(item)
 
     def drop_item(self, item):
         results = []

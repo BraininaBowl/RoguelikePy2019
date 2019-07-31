@@ -6,8 +6,8 @@ def menu(con, header, options, width, screen_width, screen_height, background = 
     if len(options) > 26: raise ValueError('Cannot have a menu with more than 26 options.')
 
     # calculate total height for the header (after auto-wrap) and one line per option
-    header_height = libtcod.console_get_height_rect(con, 0, 0, width, screen_height, header)
-    height = len(options) + header_height
+    header_height = libtcod.console_get_height_rect(con, 0, 0, width, screen_height, header) + 2
+    height = len(options) + header_height + 1
 
     # create an off-screen console that represents the menu's window
     window = libtcod.console_new(width, height)
@@ -16,16 +16,17 @@ def menu(con, header, options, width, screen_width, screen_height, background = 
     libtcod.console_set_default_foreground(window, colors.get(foreground))
     libtcod.console_set_default_background(window, colors.get(background))
     libtcod.console_clear(window)
-    libtcod.console_print_rect_ex(window, 0, 0, width, height, libtcod.BKGND_SET, libtcod.LEFT, header)
+    libtcod.console_print_rect_ex(window, 1, 1, width, height, libtcod.BKGND_SET, libtcod.LEFT, header)
 
     # print all the options
     y = header_height
     letter_index = ord('a')
     for option_text in options:
         text = '(' + chr(letter_index) + ') ' + option_text
-        libtcod.console_print_ex(window, 0, y, libtcod.BKGND_SET, libtcod.LEFT, text)
+        libtcod.console_print_ex(window, 1, y, libtcod.BKGND_SET, libtcod.LEFT, text)
         y += 1
         letter_index += 1
+    libtcod.console_print_ex(window, 1, y, libtcod.BKGND_SET, libtcod.LEFT, " ")
 
     # blit the contents of "window" to the root console
     x = int(screen_width / 2 - width / 2)
@@ -40,11 +41,11 @@ def inventory_menu(con, header, player, inventory_width, screen_width, screen_he
         options = []
         for item in player.inventory.items:
             if player.equipment.main_hand == item:
-                options.append('{0} (on main hand)'.format(item.name))
+                options.append('{0} ({1}) (on main hand)'.format(item.name,item.number))
             elif player.equipment.off_hand == item:
-                options.append('{0} (on off hand)'.format(item.name))
+                options.append('{0} ({1}) (on off hand)'.format(item.name,item.number))
             else:
-                options.append(item.name)
+                options.append('{0} ({1})'.format(item.name,item.number))
 
     menu(con, header, options, inventory_width, screen_width, screen_height)
 

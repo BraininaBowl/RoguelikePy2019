@@ -255,7 +255,7 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
 
                 if leveled_up:
                     message_log.add_message(Message(
-                        'Your battle skills grow stronger! You reached level {0}'.format(
+                        'You reached level {0}'.format(
                             player.level.current_level) + '!', colors.get('green')))
                     previous_game_state = game_state
                     game_state = GameStates.LEVEL_UP
