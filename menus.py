@@ -70,7 +70,7 @@ def character_screen(player, character_screen_width, character_screen_height, sc
     libtcod.console_clear(window)
 
     libtcod.console_print_rect_ex(window, 1, 1, character_screen_width+2, character_screen_height, libtcod.BKGND_SET,
-                                  libtcod.LEFT, 'Character Information')
+                                  libtcod.LEFT, 'CHARACTER INFORMATION')
     libtcod.console_print_rect_ex(window, 1, 2, character_screen_width+2, character_screen_height, libtcod.BKGND_SET,
                                   libtcod.LEFT, 'Level: {0}'.format(player.level.current_level))
     libtcod.console_print_rect_ex(window, 1, 3, character_screen_width+2, character_screen_height, libtcod.BKGND_SET,

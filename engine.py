@@ -32,12 +32,12 @@ def animation (anim_frame, anim_time):
 
 
 def update_cam(player, constants):
-    cam_x = int(player.x * 2 - constants['screen_width'] / 2)
-    cam_y = int(player.y * 2 - (constants['screen_height'] - constants['panel_height']) / 2)
+    cam_x = int(player.x * 2 - (constants['screen_width'] - constants['panel_width']) / 2)
+    cam_y = int(player.y * 2 - (constants['screen_height'] / 2))
 
-    return cam_x,cam_y
+    return cam_x, cam_y
 
-def play_game(player, entities, game_map, message_log, game_state, con, panel, tooltip, constants, cam_x, cam_y, anim_frame, anim_time):
+def play_game(player, entities, game_map, message_log, con, panel, tooltip, constants, cam_x, cam_y, anim_frame, anim_time):
 
     fov_recompute = True
     fov_map = initialize_fov(game_map)
@@ -58,7 +58,7 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, t
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, constants['fov_radius'], constants['fov_light_walls'], constants['fov_algorithm'])
 
-        render_all(con, panel, tooltip, entities, player, game_map, fov_map, fov_recompute, message_log, constants['screen_width'], constants['screen_height'], constants['map_width'], constants['map_height'], constants['bar_width'], constants['panel_height'], constants['panel_y'], mouse, colors, cam_x, cam_y, anim_frame, game_state, targeting_item)
+        render_all(con, panel, tooltip, entities, player, game_map, fov_map, fov_recompute, message_log, constants['screen_width'], constants['screen_height'], constants['map_width'], constants['map_height'], constants['panel_width'], constants['panel_height'], constants['panel_x'], mouse, colors, cam_x, cam_y, anim_frame, game_state, targeting_item)
 
         fov_recompute = False
 
@@ -75,6 +75,7 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, t
         show_inventory = action.get('show_inventory')
         drop_inventory = action.get('drop_inventory')
         inventory_index = action.get('inventory_index')
+        toggle_log = action.get('toggle_log')
         take_stairs = action.get('take_stairs')
         level_up = action.get('level_up')
         show_character_screen = action.get('show_character_screen')
@@ -134,6 +135,12 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, t
                 player_turn_results.extend(player.inventory.use(item, entities=entities, fov_map=fov_map))
             elif game_state == GameStates.DROP_INVENTORY:
                 player_turn_results.extend(player.inventory.drop_item(item))
+
+        if toggle_log:
+            if constants['panel_height'] == constants['screen_height']:
+                constants['panel_height'] = 5
+            else:
+                constants['panel_height'] = constants['screen_height']
 
         if take_stairs and game_state == GameStates.PLAYERS_TURN:
             for entity in entities:
@@ -307,7 +314,7 @@ def main():
     load_customfont()
 
     con = libtcod.console_new(constants['map_width']*2, constants['map_height']*2)
-    panel = libtcod.console_new(constants['screen_width'], constants['panel_height'])
+    panel = libtcod.console_new(constants['panel_width'], constants['screen_height'])
     tooltip = libtcod.console_new(constants['screen_width'], 1)
 
     player = None
@@ -376,7 +383,7 @@ def main():
         else:
             libtcod.console_clear(con)
             cam_x, cam_y = update_cam(player, constants)
-            play_game(player, entities, game_map, message_log, game_state, con, panel, tooltip, constants, cam_x, cam_y, anim_frame, anim_time)
+            play_game(player, entities, game_map, message_log, con, panel, tooltip, constants, cam_x, cam_y, anim_frame, anim_time)
 
             show_main_menu = True
 

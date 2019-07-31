@@ -37,7 +37,7 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
     libtcod.console_set_default_foreground(panel, text_color)
     libtcod.console_print_ex(panel, x, y, libtcod.BKGND_NONE, libtcod.LEFT, '{0}: {1}/{2}'.format(name, value, maximum))
 
-def render_all(con, panel, tooltip, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, bar_width, panel_height, panel_y, mouse, colors, cam_x, cam_y,anim_frame, game_state, targeting_item):
+def render_all(con, panel, tooltip, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, panel_width, panel_height, panel_x, mouse, colors, cam_x, cam_y,anim_frame, game_state, targeting_item):
 
     libtcod.console_clear(0)
 
@@ -75,32 +75,37 @@ def render_all(con, panel, tooltip, entities, player, game_map, fov_map, fov_rec
     for entity in entities_in_render_order:
         draw_entity(con, entity, fov_map, anim_frame, game_map, game_state)
 
-    libtcod.console_blit(con, 0,0,map_width*2, map_height*2, 0, -cam_x, -cam_y,1,1)
+    libtcod.console_blit(con, 0,0,map_width*2, map_height*2, 0, -cam_x, -cam_y)
+
+
 
     libtcod.console_set_default_background(panel, colors.get('light'))
     libtcod.console_clear(panel)
 
+    libtcod.console_set_default_foreground(panel, colors.get('green'))
+    libtcod.console_print_ex(panel, 0, 4, libtcod.BKGND_SET, libtcod.LEFT, " MESSAGE LOG [L] ")
+
+
     # Print the game messages, one line at a time
-    y = 1
+    y = 5
     for message in message_log.messages:
         libtcod.console_set_default_foreground(panel, message.color)
         libtcod.console_print_ex(panel, message_log.x, y, libtcod.BKGND_NONE, libtcod.LEFT, message.text)
         y += 1
 
-    render_bar(panel, 1, 1, bar_width, 'Health', player.fighter.hp, player.fighter.max_hp, colors.get('green'), colors.get('dark'), colors.get('light'))
+    render_bar(panel, 1, 1, panel_width-2, 'Health', player.fighter.hp, player.fighter.max_hp, colors.get('green'), colors.get('dark'), colors.get('light'))
     libtcod.console_set_default_foreground(panel, colors.get('dark'))
-    libtcod.console_print_ex(panel, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT,
-                             'Dungeon level: {0}'.format(game_map.dungeon_level))
+#    libtcod.console_print_ex(panel, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: {0}'.format(game_map.dungeon_level))
 
-    libtcod.console_set_default_background(panel, colors.get('dark'))
-    libtcod.console_set_default_foreground(panel, libtcod.white)
-    for x in range(0,screen_width):
-        libtcod.console_put_char(panel, x, 0, tiles.get('gradient_tile'),libtcod.BKGND_SET)
+#    libtcod.console_set_default_background(panel, colors.get('dark'))
+#    libtcod.console_set_default_foreground(panel, libtcod.white)
+#    for x in range(0,screen_width):
+#        libtcod.console_put_char(panel, x, 0, tiles.get('gradient_tile'),libtcod.BKGND_SET)
 
     libtcod.console_set_default_foreground(panel, colors.get('dark'))
     libtcod.console_set_default_background(panel, colors.get('light'))
 
-    libtcod.console_blit(panel, 0, 0, screen_width, panel_height, 0, 0, panel_y)
+    libtcod.console_blit(panel, 0, 0, panel_width, panel_height, 0, panel_x,0)
 
     libtcod.console_set_default_foreground(tooltip, colors.get('light'))
     libtcod.console_set_default_background(tooltip, colors.get('dark'))

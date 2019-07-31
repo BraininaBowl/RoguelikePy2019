@@ -19,13 +19,13 @@ def get_constants():
     screen_height = 40
 
     # Messages panel
-    bar_width = 20
-    panel_height = 7
-    panel_y = screen_height - panel_height
+    panel_width = 20
+    panel_height = screen_height
+    panel_x = screen_width - panel_width
 
-    message_x = bar_width + 2
-    message_width = screen_width - bar_width - 2
-    message_height = panel_height - 1
+    message_x = 1
+    message_width = panel_width - 2
+    message_height = screen_height - 5
 
     # Size of the map
     map_width = 80
@@ -49,9 +49,9 @@ def get_constants():
         'window_title': window_title,
         'screen_width': screen_width,
         'screen_height': screen_height,
-        'bar_width': bar_width,
+        'panel_width': panel_width,
         'panel_height': panel_height,
-        'panel_y': panel_y,
+        'panel_x': panel_x,
         'message_x': message_x,
         'message_width': message_width,
         'message_height': message_height,
