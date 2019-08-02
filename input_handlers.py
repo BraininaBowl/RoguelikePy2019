@@ -134,7 +134,7 @@ def handle_player_dead_keys(key):
 
 
 def handle_mouse(mouse, cam_x, cam_y):
-    (x, y) = (int((mouse.cx+cam_x)/2), int((mouse.cy+cam_y)/2))
+    (x, y) = (int((mouse.cx+cam_x)/3), int((mouse.cy+cam_y)/2))
 
     if mouse.lbutton_pressed:
         return {'left_click': (x, y)}

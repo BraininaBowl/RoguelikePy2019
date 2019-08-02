@@ -15,8 +15,8 @@ from render_functions import RenderOrder
 
 def get_constants():
     window_title = 'Rogue 451'
-    screen_width = 80
-    screen_height = 40
+    screen_width = 120
+    screen_height = 36
 
     # Messages panel
     panel_width = 20

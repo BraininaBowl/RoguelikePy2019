@@ -32,7 +32,7 @@ def animation (anim_frame, anim_time):
 
 
 def update_cam(player, constants):
-    cam_x = int(player.x * 2 - (constants['screen_width'] - constants['panel_width']) / 2)
+    cam_x = int(player.x * 3 - (constants['screen_width'] - constants['panel_width']) / 2)
     cam_y = int(player.y * 2 - (constants['screen_height'] / 2))
 
     return cam_x, cam_y
@@ -313,7 +313,7 @@ def main():
 
     load_customfont()
 
-    con = libtcod.console_new(constants['map_width']*2, constants['map_height']*2)
+    con = libtcod.console_new(constants['map_width']*3, constants['map_height']*2)
     panel = libtcod.console_new(constants['panel_width'], constants['screen_height'])
     tooltip = libtcod.console_new(constants['screen_width'], 1)
 

@@ -2,17 +2,17 @@ import libtcodpy as libtcod
 
 tiles = {
     'wall_tile': 256,
-    'player_tile': 258,
-    'orc_tile': 260,
-    'goblin_tile': 262,
-    'troll_tile': 264,
-    'scroll_tile': 266,
-    'healingpotion_tile': 268,
-    'sword_tile': 270,
-    'shield_tile': 272,
-    'stairsdown_tile': 274,
-    'dagger_tile': 276,
-    'gradient_tile': 320
+    'player_tile': 259,
+    'orc_tile': 262,
+    'goblin_tile': 265,
+    'troll_tile': 268,
+    'scroll_tile': 271,
+    'healingpotion_tile': 274,
+    'sword_tile': 277,
+    'shield_tile': 280,
+    'dagger_tile': 283,
+    'gradient_tile': 320,
+    'stairsdown_tile': 352
 }
 
 
