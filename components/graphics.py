@@ -12,6 +12,8 @@ tiles = {
     'shield_tile': 280,
     'dagger_tile': 283,
     'gradient_tile': 320,
+    'up_tile': 321,
+    'down_tile': 322,
     'stairsdown_tile': 352
 }
 

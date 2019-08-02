@@ -21,6 +21,9 @@ def load_customfont():
         libtcod.console_map_ascii_codes_to_font(a, 32, 0, y)
         a += 32
 
+def update_panels_heights(player,panel_height):
+    return panel_height - 7 - len(player.inventory.items), len(player.inventory.items)
+
 def animation (anim_frame, anim_time):
     if libtcod.sys_elapsed_milli() - anim_time > 200:
         anim_time = libtcod.sys_elapsed_milli()
@@ -37,7 +40,7 @@ def update_cam(player, constants):
 
     return cam_x, cam_y
 
-def play_game(player, entities, game_map, message_log, con, panel, tooltip, constants, cam_x, cam_y, anim_frame, anim_time):
+def play_game(player, entities, game_map, message_log, con, panel, tooltip, messages_pane, inventory_pane, constants, cam_x, cam_y, anim_frame, anim_time, log_scroll, log_height, inv_scroll, inv_height):
 
     fov_recompute = True
     fov_map = initialize_fov(game_map)
@@ -58,7 +61,9 @@ def play_game(player, entities, game_map, message_log, con, panel, tooltip, cons
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, constants['fov_radius'], constants['fov_light_walls'], constants['fov_algorithm'])
 
-        render_all(con, panel, tooltip, entities, player, game_map, fov_map, fov_recompute, message_log, constants['screen_width'], constants['screen_height'], constants['map_width'], constants['map_height'], constants['panel_width'], constants['panel_height'], constants['panel_x'], mouse, colors, cam_x, cam_y, anim_frame, game_state, targeting_item)
+        log_height, inv_height = update_panels_heights(player, constants['panel_height'])
+
+        render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, player, game_map, fov_map, fov_recompute, message_log, constants['screen_width'], constants['screen_height'], constants['map_width'], constants['map_height'], constants['panel_width'], constants['panel_height'], constants['panel_x'], mouse, colors, cam_x, cam_y, anim_frame, game_state, targeting_item, log_scroll, log_height, inv_scroll, inv_height)
 
         fov_recompute = False
 
@@ -86,6 +91,19 @@ def play_game(player, entities, game_map, message_log, con, panel, tooltip, cons
         right_click = mouse_action.get('right_click')
 
         player_turn_results = []
+
+        if left_click:
+            #scroll
+            if mouse.cx == constants['screen_width']-1 or mouse.cx == constants['screen_width']-2 or mouse.cx == constants['screen_width']-3:
+                if mouse.cy == 4:
+                    #scroll message log up
+                    log_scroll += 1
+#                    if log_scroll > len(MessageLog) - log_height:
+#                        log_scroll = len(MessageLog) - log_height
+                elif mouse.cy == 4 + log_height and log_scroll > 0:
+                    # scroll message log down
+                    log_scroll -= 1
+
 
         if move and game_state == GameStates.PLAYERS_TURN:
             dx, dy = move
@@ -136,11 +154,11 @@ def play_game(player, entities, game_map, message_log, con, panel, tooltip, cons
             elif game_state == GameStates.DROP_INVENTORY:
                 player_turn_results.extend(player.inventory.drop_item(item))
 
-        if toggle_log:
-            if constants['panel_height'] == constants['screen_height']:
-                constants['panel_height'] = 5
-            else:
-                constants['panel_height'] = constants['screen_height']
+#        if toggle_log:
+#            if constants['panel_height'] == constants['screen_height']:
+#                constants['panel_height'] = 5
+#            else:
+#                constants['panel_height'] = constants['screen_height']
 
         if take_stairs and game_state == GameStates.PLAYERS_TURN:
             for entity in entities:
@@ -316,6 +334,8 @@ def main():
     con = libtcod.console_new(constants['map_width']*3, constants['map_height']*2)
     panel = libtcod.console_new(constants['panel_width'], constants['screen_height'])
     tooltip = libtcod.console_new(constants['screen_width'], 1)
+    messages_pane = libtcod.console_new(constants['message_width'], 1000)
+    inventory_pane = libtcod.console_new(constants['message_width'], 40)
 
     player = None
     entities = []
@@ -330,6 +350,9 @@ def main():
     main_menu_background_image_1 = libtcod.image_load('menu_background_1.png')
     main_menu_background_image_2 = libtcod.image_load('menu_background_2.png')
     main_menu_background_image_3 = libtcod.image_load('menu_background_3.png')
+
+    log_scroll = 0
+    inv_scroll = 0
 
     key = libtcod.Key()
     mouse = libtcod.Mouse()
@@ -383,7 +406,12 @@ def main():
         else:
             libtcod.console_clear(con)
             cam_x, cam_y = update_cam(player, constants)
-            play_game(player, entities, game_map, message_log, con, panel, tooltip, constants, cam_x, cam_y, anim_frame, anim_time)
+
+            log_height, inv_height = update_panels_heights(player, constants['panel_height'])
+            log_scroll = 0
+            inv_scroll = 0
+
+            play_game(player, entities, game_map, message_log, con, panel, tooltip, messages_pane, inventory_pane, constants, cam_x, cam_y, anim_frame, anim_time, log_scroll, log_height, inv_scroll, inv_height)
 
             show_main_menu = True
 

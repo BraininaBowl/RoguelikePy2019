@@ -19,13 +19,13 @@ def get_constants():
     screen_height = 36
 
     # Messages panel
-    panel_width = 20
+    panel_width = 30
     panel_height = screen_height
     panel_x = screen_width - panel_width
 
-    message_x = 1
-    message_width = panel_width - 2
-    message_height = screen_height - 5
+    message_x = 0
+    message_width = panel_width - 3
+    message_height = 800
 
     # Size of the map
     map_width = 80
