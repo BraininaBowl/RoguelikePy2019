@@ -119,7 +119,6 @@ def render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, pla
     libtcod.console_set_default_background(inventory_pane, colors.get('light'))
     libtcod.console_clear(inventory_pane)
     y = 1
-    print(inv_selected)
     for item in player.inventory.items:
         if y == inv_selected + 1:
             libtcod.console_set_default_background(inventory_pane, colors.get('dark'))
