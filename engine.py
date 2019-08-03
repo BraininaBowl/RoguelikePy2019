@@ -98,8 +98,8 @@ def play_game(player, entities, game_map, message_log, con, panel, tooltip, mess
                 if mouse.cy == 4:
                     #scroll message log up
                     log_scroll += 1
-#                    if log_scroll > len(MessageLog) - log_height:
-#                        log_scroll = len(MessageLog) - log_height
+                    if log_scroll > len(message_log.messages) - log_height:
+                        log_scroll = len(message_log.messages) - log_height
                 elif mouse.cy == 4 + log_height and log_scroll > 0:
                     # scroll message log down
                     log_scroll -= 1

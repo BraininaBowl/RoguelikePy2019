@@ -35,7 +35,7 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
         libtcod.console_rect(panel, x, y, bar_width, 1, False, libtcod.BKGND_SET)
 
     libtcod.console_set_default_foreground(panel, text_color)
-    libtcod.console_print_ex(panel, x+int(bar_width/2), y, libtcod.BKGND_NONE, libtcod.CENTER, '{0}: {1}/{2}'.format(name, value, maximum))
+    libtcod.console_print_ex(panel, x+int(total_width/2), y, libtcod.BKGND_NONE, libtcod.CENTER, '{0}: {1}/{2}'.format(name, value, maximum))
 
 def render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, panel_width, panel_height, panel_x, mouse, colors, cam_x, cam_y,anim_frame, game_state, targeting_item, log_scroll, log_height, inv_scroll, inv_height):
 
@@ -88,7 +88,7 @@ def render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, pla
     libtcod.console_clear(panel)
 
     # Print the game messages, one line at a time
-    libtcod.console_print_ex(panel, int(panel_width / 2), 3, libtcod.BKGND_SET, libtcod.CENTER, "----- Messages -----")
+    libtcod.console_print_ex(panel, int(panel_width / 2), 3, libtcod.BKGND_SET, libtcod.CENTER, "-------- Messages --------")
 
 
     libtcod.console_set_default_background(messages_pane, colors.get('light'))
@@ -114,7 +114,7 @@ def render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, pla
     # Print the inventory items
 #    libtcod.console_set_default_background(panel, colors.get('light'))
 #    libtcod.console_set_default_foreground(panel, colors.get('dark'))
-    libtcod.console_print_ex(panel, int(panel_width / 2), 5+log_height, libtcod.BKGND_SET, libtcod.CENTER, "----- Backpack -----")
+    libtcod.console_print_ex(panel, int(panel_width / 2), 5+log_height, libtcod.BKGND_SET, libtcod.CENTER, "-------- Backpack --------")
 
     libtcod.console_set_default_background(inventory_pane, colors.get('light'))
     libtcod.console_set_default_foreground(inventory_pane, colors.get('dark'))
@@ -128,18 +128,16 @@ def render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, pla
         else:
             libtcod.console_print_ex(inventory_pane, 0, y, libtcod.BKGND_NONE, libtcod.LEFT,'{0} ({1})'.format(item.name, item.number))
         y += 1
-#    if inv_scroll > y - inv_height:
-#        inv_scroll = y - inv_height
     libtcod.console_blit(inventory_pane, 0, y-inv_height, panel_width-3, inv_height, panel, 2,6+log_height)
 
     render_bar(panel, 2, 1, panel_width-4, 'Health', player.fighter.hp, player.fighter.max_hp, colors.get('green'), colors.get('dark'), colors.get('light'))
     libtcod.console_set_default_foreground(panel, colors.get('dark'))
 #    libtcod.console_print_ex(panel, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT, 'Dungeon level: {0}'.format(game_map.dungeon_level))
 
-#    libtcod.console_set_default_background(panel, colors.get('dark'))
-#    libtcod.console_set_default_foreground(panel, libtcod.white)
-#    for x in range(0,screen_width):
-#        libtcod.console_put_char(panel, x, 0, tiles.get('gradient_tile'),libtcod.BKGND_SET)
+    libtcod.console_set_default_background(panel, colors.get('light'))
+    libtcod.console_set_default_foreground(panel, colors.get('dark'))
+    for y in range(0,screen_height):
+        libtcod.console_put_char(panel, 0, y, tiles.get('gradient_tile'),libtcod.BKGND_SET)
 
     libtcod.console_set_default_foreground(panel, colors.get('dark'))
     libtcod.console_set_default_background(panel, colors.get('light'))
