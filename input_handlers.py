@@ -39,6 +39,15 @@ def handle_player_turn_keys(key):
     elif key_char == 'i':
         return {'show_inventory': True}
 
+    elif key_char == ',':
+        return {'prev_inventory': True}
+
+    elif key_char == '.':
+        return {'next_inventory': True}
+
+    elif key_char == 'u':
+        return {'use_inventory': True}
+
     elif key_char == 'd':
         return {'drop_inventory': True}
 

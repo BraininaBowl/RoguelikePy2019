@@ -37,7 +37,7 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
     libtcod.console_set_default_foreground(panel, text_color)
     libtcod.console_print_ex(panel, x+int(total_width/2), y, libtcod.BKGND_NONE, libtcod.CENTER, '{0}: {1}/{2}'.format(name, value, maximum))
 
-def render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, panel_width, panel_height, panel_x, mouse, colors, cam_x, cam_y,anim_frame, game_state, targeting_item, log_scroll, log_height, inv_scroll, inv_height):
+def render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, map_width, map_height, panel_width, panel_height, panel_x, mouse, colors, cam_x, cam_y,anim_frame, game_state, targeting_item, log_scroll, log_height, inv_scroll, inv_height, inv_selected):
 
     libtcod.console_clear(0)
 
@@ -117,16 +117,22 @@ def render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, pla
     libtcod.console_print_ex(panel, int(panel_width / 2), 5+log_height, libtcod.BKGND_SET, libtcod.CENTER, "-------- Backpack --------")
 
     libtcod.console_set_default_background(inventory_pane, colors.get('light'))
-    libtcod.console_set_default_foreground(inventory_pane, colors.get('dark'))
     libtcod.console_clear(inventory_pane)
     y = 1
+    print(inv_selected)
     for item in player.inventory.items:
-        if player.equipment.main_hand == item:
-            libtcod.console_print_ex(inventory_pane, 0, y, libtcod.BKGND_NONE, libtcod.LEFT,'{0} ({1}) (on main hand)'.format(item.name, item.number))
-        elif player.equipment.off_hand == item:
-            libtcod.console_print_ex(inventory_pane, 0, y, libtcod.BKGND_NONE, libtcod.LEFT,'{0} ({1}) (on off hand)'.format(item.name, item.number))
+        if y == inv_selected + 1:
+            libtcod.console_set_default_background(inventory_pane, colors.get('dark'))
+            libtcod.console_set_default_foreground(inventory_pane, colors.get('light'))
         else:
-            libtcod.console_print_ex(inventory_pane, 0, y, libtcod.BKGND_NONE, libtcod.LEFT,'{0} ({1})'.format(item.name, item.number))
+            libtcod.console_set_default_background(inventory_pane, colors.get('light'))
+            libtcod.console_set_default_foreground(inventory_pane, colors.get('dark'))
+        if player.equipment.main_hand == item:
+            libtcod.console_print_ex(inventory_pane, 0, y, libtcod.BKGND_SET, libtcod.LEFT,'{0} ({1}) (main)'.format(item.name, item.number))
+        elif player.equipment.off_hand == item:
+            libtcod.console_print_ex(inventory_pane, 0, y, libtcod.BKGND_SET, libtcod.LEFT,'{0} ({1}) (off)'.format(item.name, item.number))
+        else:
+            libtcod.console_print_ex(inventory_pane, 0, y, libtcod.BKGND_SET, libtcod.LEFT,'{0} ({1})'.format(item.name, item.number))
         y += 1
     libtcod.console_blit(inventory_pane, 0, y-inv_height, panel_width-3, inv_height, panel, 2,6+log_height)
 

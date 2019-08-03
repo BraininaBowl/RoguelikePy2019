@@ -40,7 +40,7 @@ def update_cam(player, constants):
 
     return cam_x, cam_y
 
-def play_game(player, entities, game_map, message_log, con, panel, tooltip, messages_pane, inventory_pane, constants, cam_x, cam_y, anim_frame, anim_time, log_scroll, log_height, inv_scroll, inv_height):
+def play_game(player, entities, game_map, message_log, con, panel, tooltip, messages_pane, inventory_pane, constants, cam_x, cam_y, anim_frame, anim_time, log_scroll, log_height, inv_scroll, inv_height, inv_selected):
 
     fov_recompute = True
     fov_map = initialize_fov(game_map)
@@ -63,7 +63,7 @@ def play_game(player, entities, game_map, message_log, con, panel, tooltip, mess
 
         log_height, inv_height = update_panels_heights(player, constants['panel_height'])
 
-        render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, player, game_map, fov_map, fov_recompute, message_log, constants['screen_width'], constants['screen_height'], constants['map_width'], constants['map_height'], constants['panel_width'], constants['panel_height'], constants['panel_x'], mouse, colors, cam_x, cam_y, anim_frame, game_state, targeting_item, log_scroll, log_height, inv_scroll, inv_height)
+        render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, player, game_map, fov_map, fov_recompute, message_log, constants['screen_width'], constants['screen_height'], constants['map_width'], constants['map_height'], constants['panel_width'], constants['panel_height'], constants['panel_x'], mouse, colors, cam_x, cam_y, anim_frame, game_state, targeting_item, log_scroll, log_height, inv_scroll, inv_height, inv_selected)
 
         fov_recompute = False
 
@@ -77,10 +77,13 @@ def play_game(player, entities, game_map, message_log, con, panel, tooltip, mess
         move = action.get('move')
         wait = action.get('wait')
         pickup = action.get('pickup')
-        show_inventory = action.get('show_inventory')
+#        show_inventory = action.get('show_inventory')
+        prev_inventory = action.get('prev_inventory')
+        next_inventory = action.get('next_inventory')
+        use_inventory = action.get('use_inventory')
         drop_inventory = action.get('drop_inventory')
-        inventory_index = action.get('inventory_index')
-        toggle_log = action.get('toggle_log')
+#        inventory_index = action.get('inventory_index')
+#        toggle_log = action.get('toggle_log')
         take_stairs = action.get('take_stairs')
         level_up = action.get('level_up')
         show_character_screen = action.get('show_character_screen')
@@ -103,6 +106,28 @@ def play_game(player, entities, game_map, message_log, con, panel, tooltip, mess
                 elif mouse.cy == 4 + log_height and log_scroll > 0:
                     # scroll message log down
                     log_scroll -= 1
+
+        if next_inventory and inv_selected < len(player.inventory.items)-1:
+            inv_selected += 1
+
+        if prev_inventory and inv_selected > 0:
+            inv_selected -= 1
+
+        if use_inventory and game_state != GameStates.PLAYER_DEAD:
+            item = player.inventory.items[inv_selected]
+            player_turn_results.extend(player.inventory.use(item, entities=entities, fov_map=fov_map))
+            if inv_selected > len(player.inventory.items)-1:
+                inv_selected = len(player.inventory.items)-1
+            if inv_selected < 0:
+                inv_selected = 0
+
+        if drop_inventory and game_state != GameStates.PLAYER_DEAD:
+            item = player.inventory.items[inv_selected]
+            player_turn_results.extend(player.inventory.drop_item(item))
+            if inv_selected > len(player.inventory.items)-1:
+                inv_selected = len(player.inventory.items)-1
+            if inv_selected < 0:
+                inv_selected = 0
 
 
         if move and game_state == GameStates.PLAYERS_TURN:
@@ -137,22 +162,18 @@ def play_game(player, entities, game_map, message_log, con, panel, tooltip, mess
             else:
                 message_log.add_message(Message('There is nothing here to pick up.'))
 
-        if show_inventory:
-            previous_game_state = game_state
-            game_state = GameStates.SHOW_INVENTORY
+#        if show_inventory:
+#            previous_game_state = game_state
+#            game_state = GameStates.SHOW_INVENTORY
 
-        if drop_inventory:
-            previous_game_state = game_state
-            game_state = GameStates.DROP_INVENTORY
+#        if inventory_index is not None and previous_game_state != GameStates.PLAYER_DEAD and inventory_index < len(
+#                player.inventory.items):
+#            item = player.inventory.items[inventory_index]
 
-        if inventory_index is not None and previous_game_state != GameStates.PLAYER_DEAD and inventory_index < len(
-                player.inventory.items):
-            item = player.inventory.items[inventory_index]
-
-            if game_state == GameStates.SHOW_INVENTORY:
-                player_turn_results.extend(player.inventory.use(item, entities=entities, fov_map=fov_map))
-            elif game_state == GameStates.DROP_INVENTORY:
-                player_turn_results.extend(player.inventory.drop_item(item))
+#            if game_state == GameStates.SHOW_INVENTORY:
+#                player_turn_results.extend(player.inventory.use(item, entities=entities, fov_map=fov_map))
+#            elif game_state == GameStates.DROP_INVENTORY:
+#                player_turn_results.extend(player.inventory.drop_item(item))
 
 #        if toggle_log:
 #            if constants['panel_height'] == constants['screen_height']:
@@ -410,8 +431,9 @@ def main():
             log_height, inv_height = update_panels_heights(player, constants['panel_height'])
             log_scroll = 0
             inv_scroll = 0
+            inv_selected = 0
 
-            play_game(player, entities, game_map, message_log, con, panel, tooltip, messages_pane, inventory_pane, constants, cam_x, cam_y, anim_frame, anim_time, log_scroll, log_height, inv_scroll, inv_height)
+            play_game(player, entities, game_map, message_log, con, panel, tooltip, messages_pane, inventory_pane, constants, cam_x, cam_y, anim_frame, anim_time, log_scroll, log_height, inv_scroll, inv_height, inv_selected)
 
             show_main_menu = True
 

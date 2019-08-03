@@ -3,13 +3,15 @@ import tcod as libtcod
 from components.equipment import Equipment
 from components.equippable import Equippable
 from components.fighter import Fighter
-from components.inventory import Inventory
-from components.level import Level
 from components.graphics import tiles
+from components.inventory import Inventory
+from components.item import Item
+from components.level import Level
 from entity import Entity
 from equipment_slots import EquipmentSlots
 from game_messages import MessageLog
 from game_states import GameStates
+from item_functions import heal
 from map_objects.game_map import GameMap
 from render_functions import RenderOrder
 
@@ -83,6 +85,9 @@ def get_game_variables(constants):
     dagger = Entity(0, 0, tiles.get('dagger_tile'), libtcod.white, 'Dagger', render_order=RenderOrder.ITEM, equippable=equippable_component, sprite_main_shift=320)
     player.inventory.add_item(dagger)
     player.equipment.toggle_equip(dagger)
+    item_component = Item(use_function=heal, amount=40)
+    potion = Entity(0, 0, tiles.get('healingpotion_tile'), libtcod.white, 'Healing Potion', render_order=RenderOrder.ITEM, item=item_component)
+    player.inventory.add_item(potion)
 
     game_map = GameMap(constants['map_width'], constants['map_height'])
     game_map.make_map(constants['max_rooms'], constants['room_min_size'], constants['room_max_size'],
