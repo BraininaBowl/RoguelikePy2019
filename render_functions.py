@@ -115,6 +115,8 @@ def render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, pla
 #    libtcod.console_set_default_background(panel, colors.get('light'))
 #    libtcod.console_set_default_foreground(panel, colors.get('dark'))
     libtcod.console_print_ex(panel, int(panel_width / 2), 5+log_height, libtcod.BKGND_SET, libtcod.CENTER, "-------- Backpack --------")
+    libtcod.console_set_default_foreground(panel, colors.get('green'))
+    libtcod.console_print_ex(panel, int(panel_width / 2), 6+log_height, libtcod.BKGND_SET, libtcod.CENTER, "<> select | [u]se | [d]rop")
 
     libtcod.console_set_default_background(inventory_pane, colors.get('light'))
     libtcod.console_clear(inventory_pane)
@@ -133,7 +135,7 @@ def render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, pla
         else:
             libtcod.console_print_ex(inventory_pane, 0, y, libtcod.BKGND_SET, libtcod.LEFT,'{0} ({1})'.format(item.name, item.number))
         y += 1
-    libtcod.console_blit(inventory_pane, 0, y-inv_height, panel_width-3, inv_height, panel, 2,6+log_height)
+    libtcod.console_blit(inventory_pane, 0, y-inv_height, panel_width-3, inv_height, panel, 2,7+log_height)
 
     render_bar(panel, 2, 1, panel_width-4, 'Health', player.fighter.hp, player.fighter.max_hp, colors.get('green'), colors.get('dark'), colors.get('light'))
     libtcod.console_set_default_foreground(panel, colors.get('dark'))
@@ -149,8 +151,6 @@ def render_all(con, panel, tooltip, messages_pane, inventory_pane, entities, pla
 
     libtcod.console_blit(panel, 0, 0, panel_width, panel_height, 0, panel_x,0)
 
-    libtcod.console_set_default_foreground(tooltip, colors.get('light'))
-    libtcod.console_set_default_background(tooltip, colors.get('dark'))
     tooltip_text = get_names_under_mouse(cam_x,cam_y,mouse, entities, fov_map)
     tooltip_len = len(tooltip_text)
     libtcod.console_set_default_background(tooltip, libtcod.black)

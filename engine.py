@@ -22,7 +22,8 @@ def load_customfont():
         a += 32
 
 def update_panels_heights(player,panel_height):
-    return panel_height - 7 - len(player.inventory.items), len(player.inventory.items)
+    return panel_height - 8 - len(player.inventory.items), len(player.inventory.items)
+    #log_height, inv_height
 
 def animation (anim_frame, anim_time):
     if libtcod.sys_elapsed_milli() - anim_time > 200:
@@ -95,8 +96,37 @@ def play_game(player, entities, game_map, message_log, con, panel, tooltip, mess
 
         player_turn_results = []
 
+        #inventory highlight for mouse use
+        if mouse.cx > constants['screen_width'] - constants['panel_width'] and mouse.cy >= constants['panel_height'] - 1 - inv_height and mouse.cy < constants['panel_height'] - 1:
+            inv_selected = mouse.cy-(constants['panel_height'] - 1 - inv_height)
+
         if left_click:
-            #scroll
+
+            #move
+            if mouse.cx < player.x*3 - cam_x and mouse.cx > player.x*3 - cam_x - 6 and mouse.cy <= player.y*2 - cam_y + 1 and mouse.cy >= player.y*2 - cam_y:
+                #move left
+                move = (-1, 0)
+            if mouse.cx > player.x*3 - cam_x + 2 and mouse.cx < player.x*3 - cam_x + 9 and mouse.cy <= player.y*2 - cam_y + 1 and mouse.cy >= player.y*2 - cam_y:
+                #move right
+                move = (1, 0)
+            if mouse.cx >= player.x*3 - cam_x and mouse.cx <= player.x*3 - cam_x + 2 and mouse.cy < player.y*2 - cam_y and mouse.cy > player.y*2 - cam_y - 4:
+                #move up
+                move = (0, -1)
+            if mouse.cx >= player.x*3 - cam_x and mouse.cx <= player.x*3 - cam_x + 2 and mouse.cy > player.y*2 - cam_y + 1 and mouse.cy < player.y*2 - cam_y + 6:
+                #move down
+                move = (0, 1)
+
+
+            #use inventory item
+            if mouse.cx > constants['screen_width']-constants['panel_width'] and mouse.cy >= constants['panel_height'] - 1 - inv_height and mouse.cy < constants['panel_height'] - 1:
+                item = player.inventory.items[mouse.cy-(constants['panel_height'] - 1 - inv_height)]
+                player_turn_results.extend(player.inventory.use(item, entities=entities, fov_map=fov_map))
+                if inv_selected > len(player.inventory.items) - 1:
+                    inv_selected = len(player.inventory.items) - 1
+                if inv_selected < 0:
+                    inv_selected = 0
+
+            #scroll log
             if mouse.cx == constants['screen_width']-1 or mouse.cx == constants['screen_width']-2 or mouse.cx == constants['screen_width']-3:
                 if mouse.cy == 4:
                     #scroll message log up
@@ -106,6 +136,17 @@ def play_game(player, entities, game_map, message_log, con, panel, tooltip, mess
                 elif mouse.cy == 4 + log_height and log_scroll > 0:
                     # scroll message log down
                     log_scroll -= 1
+
+        if right_click:
+            #drop inventory item
+            if mouse.cx > constants['screen_width']-constants['panel_width'] and mouse.cy >= constants['panel_height'] - 1 - inv_height and mouse.cy < constants['panel_height'] - 1 and len(player.inventory.items) > 0:
+                item = player.inventory.items[mouse.cy-(constants['panel_height'] - 1 - inv_height)]
+                player_turn_results.extend(player.inventory.drop_item(item))
+                if inv_selected > len(player.inventory.items) - 1:
+                    inv_selected = len(player.inventory.items) - 1
+                if inv_selected < 0:
+                    inv_selected = 0
+
 
         if next_inventory and inv_selected < len(player.inventory.items)-1:
             inv_selected += 1
